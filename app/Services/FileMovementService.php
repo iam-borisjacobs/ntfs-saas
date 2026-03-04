@@ -1,0 +1,244 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\FileRecord;
+use App\Models\FileMovement;
+use Illuminate\Support\Facades\DB;
+use App\Services\FileStateService;
+use Exception;
+
+class FileMovementService
+{
+    protected FileStateService $stateService;
+
+    public function __construct(FileStateService $stateService)
+    {
+        $this->stateService = $stateService;
+    }
+
+    /**
+     * Dispatch a file from the current owner to a new user.
+     * Enforces pessimistic locking, idempotency, and strict rule validation.
+     *
+     * @param int $fileId
+     * @param int $toUserId
+     * @param int $toDepartmentId
+     * @param string $remarks
+     * @param string $requestUuid Idempotency Key
+     * @return FileMovement
+     * @throws Exception
+     */
+    public function dispatchFile(int $fileId, int $toUserId, int $toDepartmentId, string $remarks, string $requestUuid): FileMovement
+    {
+        return DB::transaction(function () use ($fileId, $toUserId, $toDepartmentId, $remarks, $requestUuid) {
+            
+            // 1. Pessimistic Lock on the primary resource
+            $file = FileRecord::where('id', $fileId)->lockForUpdate()->firstOrFail();
+
+            // 2. Validate Ownership (Authorization)
+            if ($file->current_owner_id !== \Illuminate\Support\Facades\Auth::id()) {
+                throw new Exception("You do not have physical custody of this file.");
+            }
+
+            // 3. Validate Terminal State
+            if ($this->stateService->isTerminalState($file->status_id)) {
+                throw new Exception("This file is in a terminal state and cannot be dispatched.");
+            }
+
+            // 4. Validate Duplicate/Pending Movements
+            $hasPending = FileMovement::where('file_id', $fileId)
+                ->where('acknowledgment_status', 'PENDING')
+                ->exists();
+                
+            if ($hasPending) {
+                throw new Exception("This file already has a pending dispatch awaiting acknowledgment.");
+            }
+
+            // 5. Ensure Idempotency (prevent duplicate DB inserts from double-clicks)
+            $existingMovement = FileMovement::where('request_uuid', $requestUuid)->first();
+            if ($existingMovement) {
+                return $existingMovement; // Gracefully handle idempotency
+            }
+
+            // 6. Resolve Target Status
+            $inTransitStatusId = $this->stateService->getStatusIdByName('IN_TRANSIT');
+
+            // 7. Verify Transition is legally allowed
+            if (!$this->stateService->isTransitionAllowed($file->status_id, $inTransitStatusId)) {
+                throw new Exception("Invalid state transition to IN_TRANSIT.");
+            }
+
+            // 8. Insert Movement Record
+            $movement = FileMovement::create([
+                'agency_id' => $file->agency_id,
+                'file_id' => $file->id,
+                'from_user_id' => \Illuminate\Support\Facades\Auth::id(),
+                'from_department_id' => $file->current_department_id,
+                'to_user_id' => $toUserId,
+                'to_department_id' => $toDepartmentId,
+                'movement_type' => 'DISPATCH',
+                'acknowledgment_status' => 'PENDING',
+                'remarks' => $remarks,
+                'request_uuid' => $requestUuid,
+            ]);
+
+            // 9. Update File Status (Leave current owner intact until received)
+            $oldStatusId = $file->status_id;
+            $file->status_id = $inTransitStatusId;
+            $file->save();
+
+            // 10. Manual Audit Log for Dispatch
+            DB::table('audit_logs')->insert([
+                'agency_id' => $file->agency_id,
+                'action_type' => 'DISPATCH',
+                'entity_type' => 'file_movements',
+                'entity_id' => $movement->id,
+                'old_values' => json_encode(['status_id' => $oldStatusId]),
+                'new_values' => json_encode(['status_id' => $inTransitStatusId, 'to_user_id' => $toUserId]),
+                'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                'ip_address' => request()->ip(),
+                'created_at' => now(),
+            ]);
+
+            return $movement;
+        });
+    }
+
+    /**
+     * Accept a pending file transfer, legally claiming custody.
+     *
+     * @param int $movementId
+     * @return FileMovement
+     * @throws Exception
+     */
+    public function receiveFile(int $movementId): FileMovement
+    {
+        return DB::transaction(function () use ($movementId) {
+            
+            // Look up movement ID (non-blocking) just to get the explicitly protected file_id
+            $unlockedMovement = FileMovement::where('id', $movementId)->firstOrFail();
+
+            // 1. pessimistic lock on file FIRST (Deterministic Locking Order)
+            $file = FileRecord::where('id', $unlockedMovement->file_id)->lockForUpdate()->firstOrFail();
+
+            // 2. pessimistic lock on movement
+            $movement = FileMovement::where('id', $movementId)->lockForUpdate()->firstOrFail();
+
+            if ($movement->acknowledgment_status !== 'PENDING') {
+                throw new Exception("This movement is no longer pending.");
+            }
+
+            if ($movement->to_user_id !== \Illuminate\Support\Facades\Auth::id()) {
+                throw new Exception("You are not the designated recipient of this file.");
+            }
+
+            // 3. Resolve Target Status
+            $receivedStatusId = $this->stateService->getStatusIdByName('RECEIVED');
+
+            // 4. Update Movement Ledger
+            $movement->acknowledgment_status = 'ACCEPTED';
+            $movement->received_at = now();
+            $movement->save();
+
+            // 5. Update File Custody
+            $file->current_owner_id = $movement->to_user_id;
+            $file->current_department_id = $movement->to_department_id;
+            $file->status_id = $receivedStatusId;
+            $file->save();
+
+            // 6. Audit Log
+            DB::table('audit_logs')->insert([
+                'agency_id' => $file->agency_id,
+                'action_type' => 'RECEIVE',
+                'entity_type' => 'file_movements',
+                'entity_id' => $movement->id,
+                'new_values' => json_encode(['acknowledgment_status' => 'ACCEPTED']),
+                'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                'ip_address' => request()->ip(),
+                'created_at' => now(),
+            ]);
+
+            return $movement;
+        });
+    }
+
+    /**
+     * Reject a pending file transfer and return custody to the sender.
+     *
+     * @param int $movementId
+     * @param string $rejectionReason
+     * @return FileMovement The newly created return movement
+     * @throws Exception
+     */
+    public function rejectFile(int $movementId, string $rejectionReason): FileMovement
+    {
+        if (empty(trim($rejectionReason))) {
+            throw new Exception("A detailed rejection reason must be provided.");
+        }
+
+        return DB::transaction(function () use ($movementId, $rejectionReason) {
+            
+            // Look up file_id prior to lock boundary
+            $unlockedMovement = FileMovement::where('id', $movementId)->firstOrFail();
+
+            // 1. Lock file row FIRST
+            $file = FileRecord::where('id', $unlockedMovement->file_id)->lockForUpdate()->firstOrFail();
+
+            // 2. Lock original movement
+            $movement = FileMovement::where('id', $movementId)->lockForUpdate()->firstOrFail();
+
+            if ($movement->acknowledgment_status !== 'PENDING') {
+                throw new Exception("Only pending movements can be rejected.");
+            }
+
+            if ($movement->to_user_id !== \Illuminate\Support\Facades\Auth::id()) {
+                throw new Exception("You are not the designated recipient of this file.");
+            }
+
+            // 3. Resolve status
+            $rejectedStatusId = $this->stateService->getStatusIdByName('REJECTED');
+
+            // 4. Mark original transfer as rejected
+            $movement->acknowledgment_status = 'REJECTED';
+            $movement->remarks = "REJECTED: " . $rejectionReason;
+            $movement->save();
+
+            // 5. Insert automatic custody reversal row
+            $returnMovement = FileMovement::create([
+                'agency_id' => $file->agency_id,
+                'file_id' => $file->id,
+                'from_user_id' => \Illuminate\Support\Facades\Auth::id(),
+                'from_department_id' => $movement->to_department_id,
+                'to_user_id' => $movement->from_user_id,
+                'to_department_id' => $movement->from_department_id,
+                'movement_type' => 'RETURN',
+                'dispatched_at' => now(),
+                'received_at' => now(), // Automatically return to sender without secondary confirmation needed
+                'acknowledgment_status' => 'ACCEPTED',
+                'remarks' => 'SYSTEM GENERATED: Automatic Reversal due to Rejection.',
+                'request_uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            ]);
+
+            // 6. Revert File Custody
+            $file->current_owner_id = $movement->from_user_id;
+            $file->current_department_id = $movement->from_department_id;
+            $file->status_id = $rejectedStatusId;
+            $file->save();
+
+            // 7. Audit Log
+            DB::table('audit_logs')->insert([
+                'agency_id' => $file->agency_id,
+                'action_type' => 'REJECT',
+                'entity_type' => 'file_movements',
+                'entity_id' => $movement->id,
+                'new_values' => json_encode(['rejection_reason' => $rejectionReason]),
+                'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                'ip_address' => request()->ip(),
+                'created_at' => now(),
+            ]);
+
+            return $returnMovement;
+        });
+    }
+}
