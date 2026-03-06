@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\FileRecord;
 use App\Models\Status;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
+use App\Services\DocumentService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class FileGenerationController extends Controller
 {
@@ -17,28 +18,46 @@ class FileGenerationController extends Controller
      */
     public function create()
     {
+        if (! Auth::user() || ! Auth::user()->hasAnyRole(['Super Admin', 'Sys Admin', 'Agency Admin', 'Supervisor', 'Officer'])) {
+            abort(403, 'Unauthorized action. Clerks cannot create files.');
+        }
+
         $departments = Department::orderBy('name')->get();
+
         return view('files.create', compact('departments'));
     }
 
     /**
      * Store a newly created file in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, DocumentService $documentService)
     {
-        $validated = $request->validate([
+        if (! Auth::user() || ! Auth::user()->hasAnyRole(['Super Admin', 'Sys Admin', 'Agency Admin', 'Supervisor', 'Officer'])) {
+            abort(403, 'Unauthorized action. Clerks cannot create files.');
+        }
+
+        $maxSize = config('digital_module.max_upload_size', 10240);
+        $mimes = implode(',', config('digital_module.allowed_mimes', ['pdf', 'jpeg', 'png', 'jpg', 'doc', 'docx']));
+
+        $rules = [
             'title' => 'required|string|max:255',
             'department_id' => 'required|exists:departments,id',
             'priority_level' => 'required|integer|in:1,2,3',
             'confidentiality_level' => 'required|integer|in:1,2,3',
-        ]);
+        ];
+
+        if (config('digital_module.enabled')) {
+            $rules['digital_document'] = "nullable|file|mimes:{$mimes}|max:{$maxSize}";
+        }
+
+        $validated = $request->validate($rules);
 
         DB::beginTransaction();
         try {
             $status = Status::where('name', 'RECEIVED')->firstOrFail();
 
             // Generate a unique File Reference Number (simulated logic for now)
-            $refNumber = 'NAMA/' . date('Y') . '/' . strtoupper(Str::random(6));
+            $refNumber = 'NAMA/'.date('Y').'/'.strtoupper(Str::random(6));
 
             $file = FileRecord::create([
                 'uuid' => (string) Str::uuid(),
@@ -53,7 +72,7 @@ class FileGenerationController extends Controller
             ]);
 
             // Create the Genesis movement ledger entry
-            $file->movements()->create([
+            $movement = $file->movements()->create([
                 'request_uuid' => (string) Str::uuid(),
                 'from_user_id' => Auth::id(),
                 'to_user_id' => Auth::id(), // Starts on the creator's desk
@@ -65,14 +84,28 @@ class FileGenerationController extends Controller
                 'received_at' => now(),
             ]);
 
+            // Append the digital document optionally inside the Generation transaction
+            if (config('digital_module.enabled') && $request->hasFile('digital_document')) {
+                $documentService->storeDocument(
+                    $request->file('digital_document'),
+                    [
+                        'file_id' => $file->id,
+                        'movement_id' => $movement->id,
+                        'document_type' => 'PRIMARY',
+                    ],
+                    $request->user()
+                );
+            }
+
             DB::commit();
 
-            return redirect()->route('queues.pending')->with('success', 'File generated successfully: ' . $refNumber);
+            return redirect()->route('queues.pending')->with('success', 'File generated successfully: '.$refNumber);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Illuminate\Support\Facades\Log::error('File Generation Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            return back()->withInput()->withErrors(['error' => 'Failed to generate file record: ' . $e->getMessage()]);
+            \Illuminate\Support\Facades\Log::error('File Generation Error: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
+            return back()->withInput()->withErrors(['error' => 'Failed to generate file record: '.$e->getMessage()]);
         }
     }
 }

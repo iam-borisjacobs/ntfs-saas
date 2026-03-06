@@ -15,8 +15,13 @@ class DatabaseSeeder extends Seeder
     {
         // Setup initial structure
         $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(StatusSeeder::class);
 
-        // Core Departments
+        // Core Departments & Demo Users
+        $this->call(NAMADepartmentSeeder::class);
+        $this->call(DemoUsersSeeder::class);
+
+        // System Admin Account Setup
         $registryDept = \App\Models\Department::firstOrCreate(
             ['code' => 'REG', 'name' => 'Central Registry', 'agency_id' => 1]
         );

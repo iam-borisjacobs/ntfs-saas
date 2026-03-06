@@ -17,7 +17,7 @@ class QueueController extends Controller
         
         // Outgoing: Files I own, but are IN_TRANSIT, or last movement where I am the sender and it's pending.
         $files = FileRecord::with(['status', 'currentDepartment', 'movements' => function($q) {
-                $q->latest('dispatched_at')->limit(1);
+                $q->with(['fromUser', 'toUser', 'fromDepartment', 'toDepartment'])->latest('dispatched_at')->limit(1);
             }])
             ->whereHas('movements', function($q) use ($userId) {
                 $q->where('from_user_id', $userId)
@@ -38,7 +38,7 @@ class QueueController extends Controller
 
         // Incoming: Files directed to the current user, awaiting acknowledgment.
         $files = FileRecord::with(['status', 'currentDepartment', 'movements' => function($q) {
-                $q->latest('dispatched_at')->limit(1);
+                $q->with(['fromUser', 'toUser', 'fromDepartment', 'toDepartment'])->latest('dispatched_at')->limit(1);
             }])
             ->whereHas('movements', function($q) use ($userId) {
                 $q->where('to_user_id', $userId)

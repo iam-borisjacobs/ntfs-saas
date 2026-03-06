@@ -13,16 +13,14 @@
 
     <div class="py-12">
         <div class="w-full sm:px-6 lg:px-8 space-y-6">
-            <div class="bg-white overflow-x-auto shadow-sm sm:rounded-lg border border-gray-100">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
-                                System ID</th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
-                                Name & Email</th>
+                                Name & Email
+                            </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
                                 Department</th>

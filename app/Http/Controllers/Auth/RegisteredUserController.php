@@ -35,11 +35,26 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $department = \App\Models\Department::firstOrCreate([
+            'code' => 'GEN-OPS',
+            'name' => 'General Operations'
+        ]);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'department_id' => $department->id,
+            'system_identifier' => 'UID-'.\Illuminate\Support\Str::random(6),
+            'clearance_level' => 1,
+            'is_active' => true,
         ]);
+        
+        // Give new web registrations standard base-level access
+        if (\Spatie\Permission\Models\Role::where('name', 'Clerk')->exists() || \Spatie\Permission\Models\Role::count() === 0) {
+            $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Clerk']);
+            $user->assignRole($role);
+        }
 
         event(new Registered($user));
 

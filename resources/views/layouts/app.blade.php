@@ -6,7 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    @php
+        $systemTitle =
+            \App\Models\SystemSetting::where('key', 'system_title')->value('value') ?: config('app.name', 'Laravel');
+        $systemFavicon = \App\Models\SystemSetting::where('key', 'system_favicon_path')->value('value');
+    @endphp
+
+    <title>{{ $systemTitle }}</title>
+
+    @if ($systemFavicon)
+        <link rel="icon" href="{{ Storage::url($systemFavicon) }}" type="image/x-icon">
+    @endif
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

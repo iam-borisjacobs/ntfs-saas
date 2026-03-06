@@ -29,6 +29,13 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'system_identifier' => 'UID-'.Str::random(6),
+            'department_id' => \App\Models\Department::firstOrCreate([
+                'name' => 'General Operations', 
+                'code' => 'GEN-OPS'
+            ])->id,
+            'is_active' => true,
+            'clearance_level' => 1,
         ];
     }
 

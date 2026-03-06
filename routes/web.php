@@ -28,12 +28,18 @@ Route::middleware(['auth', 'throttle:60,1', \App\Http\Middleware\CheckAccountSta
     Route::get('/files/generate', [\App\Http\Controllers\FileGenerationController::class, 'create'])->name('files.create');
     Route::post('/files/generate', [\App\Http\Controllers\FileGenerationController::class, 'store'])->name('files.store');
     Route::get('/files/{file}', [\App\Http\Controllers\FileRecordController::class, 'show'])->name('files.show');
+    Route::put('/files/{file}', [\App\Http\Controllers\FileRecordController::class, 'update'])->name('files.update');
     
     // File Movements (Dispatch, Receive, Return)
     Route::get('/files/{file}/dispatch', [\App\Http\Controllers\FileMovementController::class, 'createDispatch'])->name('files.dispatch.create');
     Route::post('/files/{file}/dispatch', [\App\Http\Controllers\FileMovementController::class, 'storeDispatch'])->name('files.dispatch.store');
     Route::post('/movements/{movement}/receive', [\App\Http\Controllers\FileMovementController::class, 'receive'])->name('movements.receive');
     Route::post('/movements/{movement}/reject', [\App\Http\Controllers\FileMovementController::class, 'reject'])->name('movements.reject');
+
+    // Phase 12: Digital Document Endpoints
+    Route::post('/files/{file}/documents', [\App\Http\Controllers\DocumentController::class, 'store'])->name('documents.store');
+    Route::post('/documents/{document}/version', [\App\Http\Controllers\DocumentController::class, 'updateVersion'])->name('documents.update-version');
+    Route::get('/documents/{document}/download', [\App\Http\Controllers\DocumentController::class, 'download'])->name('documents.download');
 
     // Administration & Settings
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -53,7 +59,9 @@ Route::middleware(['auth', 'throttle:60,1', \App\Http\Middleware\CheckAccountSta
 
         // System Settings
         Route::get('/settings', [\App\Http\Controllers\SystemSettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings/basic', [\App\Http\Controllers\SystemSettingController::class, 'updateBasic'])->name('settings.basic');
         Route::post('/settings/logo', [\App\Http\Controllers\SystemSettingController::class, 'updateLogo'])->name('settings.logo');
+        Route::post('/settings/digital-module', [\App\Http\Controllers\SystemSettingController::class, 'updateDigitalModule'])->name('settings.digital');
     });
 });
 

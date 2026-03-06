@@ -6,5 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Status extends Model
 {
+    public $timestamps = false;
+    
+    protected $fillable = [
+        'name',
+        'is_terminal',
+    ];
     protected $guarded = [];
 }

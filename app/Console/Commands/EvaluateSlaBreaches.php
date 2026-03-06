@@ -35,11 +35,7 @@ class EvaluateSlaBreaches extends Command
                 foreach ($movements as $movement) {
 
                     // Skip if the file magically reached a terminal state while movement stayed pending
-                    if ($movement->file->status->is_terminal) {
-                        continue;
-                    }
-
-                    $hoursSinceDispatch = \Carbon\Carbon::now()->diffInHours($movement->dispatched_at);
+                    $hoursSinceDispatch = $movement->dispatched_at->diffInHours(\Carbon\Carbon::now());
 
                     // Thresholds (In production, this would query workflow_escalation_rules)
                     // Level 1: > 24 Hours
@@ -73,6 +69,23 @@ class EvaluateSlaBreaches extends Command
                                 $msgSender,
                                 'CRITICAL'
                             );
+
+                            $systemUser = \App\Models\User::firstWhere('system_identifier', 'SYS-ADMIN') ?? \App\Models\User::first();
+                            $systemUserId = $systemUser ? $systemUser->id : 1;
+
+                            // In a real app we'd dispatch to their manager or previous owner.
+                            // We mock sending an audit log that escalates.
+                            \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
+                                'agency_id' => $movement->file->agency_id,
+                                'action_type' => 'SLA_BREACH',
+                                'entity_type' => 'App\Models\FileMovement',
+                                'entity_id' => $movement->id,
+                                'user_id' => $systemUserId, // Use dynamically grabbed System Admin ID
+                                'old_values' => json_encode(['escalation_flag' => false]),
+                                'new_values' => json_encode(['escalation_flag' => true, 'severity' => $severity]),
+                                'ip_address' => '127.0.0.1',
+                                'created_at' => now(),
+                            ]);
                         }
                     }
                 }

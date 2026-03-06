@@ -6,7 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    @php
+        $systemTitle =
+            \App\Models\SystemSetting::where('key', 'system_title')->value('value') ?: config('app.name', 'Laravel');
+        $systemFavicon = \App\Models\SystemSetting::where('key', 'system_favicon_path')->value('value');
+
+        $systemAuthorName = \App\Models\SystemSetting::where('key', 'system_author_name')->value('value') ?: 'NAMA NG';
+        $systemGuestHeader =
+            \App\Models\SystemSetting::where('key', 'system_guest_header')->value('value') ?:
+            'Secure Document Tracking Portal';
+        $systemGuestDescription =
+            \App\Models\SystemSetting::where('key', 'system_guest_description')->value('value') ?:
+            'Authorized personnel only. Access the central registry to dispatch, track, and acknowledge critical documentation sequences across all inter-departmental desks.';
+    @endphp
+
+    <title>{{ $systemTitle }}</title>
+
+    @if ($systemFavicon)
+        <link rel="icon" href="{{ Storage::url($systemFavicon) }}" type="image/x-icon">
+    @endif
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -31,13 +49,11 @@
                     <path
                         d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
                 </svg>
-                <span class="text-4xl font-bold tracking-widest uppercase">NAMA NG</span>
+                <span class="text-4xl font-bold tracking-widest uppercase">{{ $systemAuthorName }}</span>
             </div>
-            <h1 class="text-4xl font-light mb-4 leading-tight">Secure Document<br><span class="font-bold">Tracking
-                    Portal</span></h1>
+            <h1 class="text-4xl font-light mb-4 leading-tight">{!! nl2br(e($systemGuestHeader)) !!}</h1>
             <p class="text-[#8FBCE3] text-lg leading-relaxed mb-12">
-                Authorized personnel only. Access the central registry to dispatch, track, and acknowledge critical
-                documentation sequences across all inter-departmental desks.
+                {{ $systemGuestDescription }}
             </p>
         </div>
 

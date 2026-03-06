@@ -45,7 +45,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('files.dispatch.store', $file->id) }}" class="space-y-6">
+                    <form method="POST" action="{{ route('files.dispatch.store', $file->uuid) }}" class="space-y-6">
                         @csrf
                         <input type="hidden" name="request_uuid" value="{{ Str::uuid() }}">
 
@@ -73,7 +73,8 @@
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}"
                                             {{ old('to_user_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}
-                                            ({{ $user->department?->code ?? 'Unassigned' }})</option>
+                                            ({{ $user->department?->code ?? 'Unassigned' }})
+                                        </option>
                                     @endforeach
                                 </select>
                                 <p class="text-xs text-gray-400 mt-1">The physical file must be physically handed to

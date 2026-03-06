@@ -22,14 +22,14 @@ class FileMovementService
      * Enforces pessimistic locking, idempotency, and strict rule validation.
      *
      * @param int $fileId
-     * @param int $toUserId
+     * @param int|null $toUserId
      * @param int $toDepartmentId
      * @param string $remarks
      * @param string $requestUuid Idempotency Key
      * @return FileMovement
      * @throws Exception
      */
-    public function dispatchFile(int $fileId, int $toUserId, int $toDepartmentId, string $remarks, string $requestUuid): FileMovement
+    public function dispatchFile(int $fileId, ?int $toUserId, int $toDepartmentId, string $remarks, string $requestUuid): FileMovement
     {
         return DB::transaction(function () use ($fileId, $toUserId, $toDepartmentId, $remarks, $requestUuid) {
             
@@ -46,7 +46,13 @@ class FileMovementService
                 throw new Exception("This file is in a terminal state and cannot be dispatched.");
             }
 
-            // 4. Validate Duplicate/Pending Movements
+            // 4. Ensure Idempotency (prevent duplicate DB inserts from double-clicks)
+            $existingMovement = FileMovement::where('request_uuid', $requestUuid)->first();
+            if ($existingMovement) {
+                return $existingMovement; // Gracefully handle idempotency
+            }
+
+            // 5. Validate Duplicate/Pending Movements
             $hasPending = FileMovement::where('file_id', $fileId)
                 ->where('acknowledgment_status', 'PENDING')
                 ->exists();
@@ -55,21 +61,23 @@ class FileMovementService
                 throw new Exception("This file already has a pending dispatch awaiting acknowledgment.");
             }
 
-            // 5. Ensure Idempotency (prevent duplicate DB inserts from double-clicks)
-            $existingMovement = FileMovement::where('request_uuid', $requestUuid)->first();
-            if ($existingMovement) {
-                return $existingMovement; // Gracefully handle idempotency
-            }
-
             // 6. Resolve Target Status
             $inTransitStatusId = $this->stateService->getStatusIdByName('IN_TRANSIT');
 
             // 7. Verify Transition is legally allowed
             if (!$this->stateService->isTransitionAllowed($file->status_id, $inTransitStatusId)) {
+                $check = \Illuminate\Support\Facades\DB::table('status_transitions')
+                    ->where('from_status_id', $file->status_id)
+                    ->where('to_status_id', $inTransitStatusId)
+                    ->exists();
+                dd("Checking transition: ", $file->status_id, $inTransitStatusId, $check);
                 throw new Exception("Invalid state transition to IN_TRANSIT.");
             }
 
-            // 8. Insert Movement Record
+            // 8. Determine movement type
+            $movementType = $toUserId ? 'DISPATCH' : 'DEPARTMENT_INBOX';
+
+            // 9. Insert Movement Record
             $movement = FileMovement::create([
                 'agency_id' => $file->agency_id,
                 'file_id' => $file->id,
@@ -77,7 +85,7 @@ class FileMovementService
                 'from_department_id' => $file->current_department_id,
                 'to_user_id' => $toUserId,
                 'to_department_id' => $toDepartmentId,
-                'movement_type' => 'DISPATCH',
+                'movement_type' => $movementType,
                 'acknowledgment_status' => 'PENDING',
                 'remarks' => $remarks,
                 'request_uuid' => $requestUuid,
@@ -88,14 +96,19 @@ class FileMovementService
             $file->status_id = $inTransitStatusId;
             $file->save();
 
-            // 10. Manual Audit Log for Dispatch
+            // 11. Manual Audit Log for Dispatch
+            $toDepartment = \App\Models\Department::find($toDepartmentId);
+            $auditDetail = $toUserId
+                ? 'Sent to ' . (\App\Models\User::find($toUserId)->name ?? 'Unknown') . ' (' . ($toDepartment->name ?? 'Unknown') . ')'
+                : 'Sent to ' . ($toDepartment->name ?? 'Unknown') . ' Department Inbox';
+
             DB::table('audit_logs')->insert([
                 'agency_id' => $file->agency_id,
                 'action_type' => 'DISPATCH',
                 'entity_type' => 'file_movements',
                 'entity_id' => $movement->id,
                 'old_values' => json_encode(['status_id' => $oldStatusId]),
-                'new_values' => json_encode(['status_id' => $inTransitStatusId, 'to_user_id' => $toUserId]),
+                'new_values' => json_encode(['status_id' => $inTransitStatusId, 'to_user_id' => $toUserId, 'detail' => $auditDetail]),
                 'user_id' => \Illuminate\Support\Facades\Auth::id(),
                 'ip_address' => request()->ip(),
                 'created_at' => now(),
@@ -129,8 +142,20 @@ class FileMovementService
                 throw new Exception("This movement is no longer pending.");
             }
 
-            if ($movement->to_user_id !== \Illuminate\Support\Facades\Auth::id()) {
-                throw new Exception("You are not the designated recipient of this file.");
+            // Authorization: Direct dispatch requires exact user match;
+            // Department inbox requires department membership.
+            $currentUserId = \Illuminate\Support\Facades\Auth::id();
+            if ($movement->to_user_id !== null) {
+                // Direct dispatch — only the designated recipient can accept
+                if ($movement->to_user_id !== $currentUserId) {
+                    throw new Exception("You are not the designated recipient of this file.");
+                }
+            } else {
+                // Department inbox — any active member of the destination department can accept
+                $userDeptId = \Illuminate\Support\Facades\Auth::user()->department_id;
+                if ($userDeptId !== $movement->to_department_id) {
+                    throw new Exception("You are not a member of the destination department.");
+                }
             }
 
             // 3. Resolve Target Status
@@ -141,7 +166,15 @@ class FileMovementService
             $movement->received_at = now();
             $movement->save();
 
-            // 5. Update File Custody
+            // 5. For department inbox dispatches, assign the receiver now
+            if ($movement->to_user_id === null) {
+                $movement->to_user_id = $currentUserId;
+                $movement->save();
+                // Re-lock to get the fresh state after our own update
+                $movement = FileMovement::where('id', $movementId)->lockForUpdate()->firstOrFail();
+            }
+
+            // 6. Update File Custody
             $file->current_owner_id = $movement->to_user_id;
             $file->current_department_id = $movement->to_department_id;
             $file->status_id = $receivedStatusId;

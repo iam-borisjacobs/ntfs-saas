@@ -107,92 +107,94 @@
             </div>
 
             <!-- Results Table -->
-            <div class="bg-white p-0 shadow-sm border border-gray-200 overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
-                                File Reference</th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
-                                Subject / Title</th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
-                                Location</th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
-                                Status</th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
-                                Timestamp</th>
-                            <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse ($files as $file)
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 whitespace-nowrap font-mono text-xs text-gray-600">
-                                    {{ $file->file_reference_number }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-gray-900 font-medium line-clamp-2">{{ $file->title }}</div>
-                                    @if ($file->priority_level > 0)
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $file->priority_level == 2 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                            {{ $file->priority_level == 2 ? 'Critical' : 'Urgent' }}
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-500">
-                                    {{ $file->currentDepartment->name ?? 'Unknown' }}<br>
-                                    <span
-                                        class="text-xs text-gray-400 font-mono">{{ $file->currentOwner->system_identifier ?? 'Unassigned' }}</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @php
-                                        $statusColor = match ($file->status->name ?? '') {
-                                            'RECEIVED' => 'bg-green-100 text-green-800',
-                                            'IN_TRANSIT' => 'bg-yellow-100 text-yellow-800',
-                                            'REJECTED' => 'bg-red-100 text-red-800',
-                                            'CLOSED', 'ARCHIVED' => 'bg-gray-100 text-gray-800',
-                                            default => 'bg-blue-100 text-blue-800',
-                                        };
-                                    @endphp
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColor }}">
-                                        {{ $file->status->name ?? 'N/A' }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-xs text-right">
-                                    {{ $file->created_at->format('M d, Y H:i') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right font-medium">
-                                    <a href="{{ route('files.show', $file->id) }}"
-                                        class="text-brand-dark hover:text-blue-900 underline">Timeline</a>
-                                </td>
-                            </tr>
-                        @empty
+            <div class="bg-white shadow-sm border border-gray-200 overflow-hidden">
+                <div class="w-full overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <h3 class="mt-2 text-sm font-medium text-gray-900">No records found</h3>
-                                    <p class="mt-1 text-sm text-gray-500">There are no files matching your clearance or
-                                        filter criteria.</p>
-                                </td>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
+                                    File Ref</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
+                                    Subject / Title</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
+                                    Location</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
+                                    Status</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
+                                    Timestamp</th>
+                                <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                    {{ $files->links() }}
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @forelse ($files as $file)
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 whitespace-nowrap font-mono text-xs text-gray-600">
+                                        {{ $file->file_reference_number }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-gray-900 font-medium line-clamp-2">{{ $file->title }}</div>
+                                        @if ($file->priority_level > 0)
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $file->priority_level == 2 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                                {{ $file->priority_level == 2 ? 'Critical' : 'Urgent' }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                                        {{ $file->currentDepartment->name ?? 'Unknown' }}<br>
+                                        <span
+                                            class="text-xs text-gray-400 font-mono">{{ $file->currentOwner->system_identifier ?? 'Unassigned' }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @php
+                                            $statusColor = match ($file->status->name ?? '') {
+                                                'RECEIVED' => 'bg-green-100 text-green-800',
+                                                'IN_TRANSIT' => 'bg-yellow-100 text-yellow-800',
+                                                'REJECTED' => 'bg-red-100 text-red-800',
+                                                'CLOSED', 'ARCHIVED' => 'bg-gray-100 text-gray-800',
+                                                default => 'bg-blue-100 text-blue-800',
+                                            };
+                                        @endphp
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColor }}">
+                                            {{ $file->status->name ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-xs text-right">
+                                        {{ $file->created_at->format('M d, Y H:i') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right font-medium">
+                                        <a href="{{ route('files.show', $file->uuid) }}"
+                                            class="text-brand-dark hover:text-blue-900 underline">Timeline</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <h3 class="mt-2 text-sm font-medium text-gray-900">No records found</h3>
+                                        <p class="mt-1 text-sm text-gray-500">There are no files matching your
+                                            clearance or
+                                            filter criteria.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                        {{ $files->links() }}
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </div>
-    </div>
 </x-app-layout>

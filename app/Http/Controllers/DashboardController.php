@@ -60,12 +60,18 @@ class DashboardController extends Controller
         $departments = $cache->getDepartments();
         $statuses = $cache->getStatuses();
 
+        // Optional Phase 12 Digital Document metric
+        $documentCount = config('digital_module.enabled', true) 
+            ? \App\Models\Document::count() 
+            : null;
+
         return view('dashboard', [
             'metrics' => [
                 'outgoing' => $outgoingCount,
                 'incoming' => $incomingCount,
                 'pending' => $pendingCount,
                 'notifications' => $unreadNotificationsCount,
+                'documents' => $documentCount, // Available via feature flag
             ],
             'activeFiles' => $activeFiles,
             'escalatedMovements' => $escalatedMovements,

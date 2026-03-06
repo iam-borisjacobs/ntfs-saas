@@ -6,3 +6,9 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
+
+// Phase 12: Digital Document Rentention Execution
+\Illuminate\Support\Facades\Schedule::command('digital:prune')
+    ->dailyAt('02:30')
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/digital_prune.log'));
