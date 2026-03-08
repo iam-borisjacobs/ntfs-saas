@@ -18,6 +18,7 @@ class FileRecordController extends Controller
             'originatingDepartment',
             'currentDepartment',
             'currentOwner',
+            'currentFileJacket',
             'movements' => function($q) {
                 // Order from newest to oldest for the timeline
                 $q->with(['fromUser.department', 'fromDepartment', 'toUser.department', 'toDepartment'])

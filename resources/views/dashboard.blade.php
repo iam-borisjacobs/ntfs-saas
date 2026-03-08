@@ -60,6 +60,23 @@
             <p class="text-3xl font-bold text-gray-900 mt-1">{{ $metrics['notifications'] }}</p>
         </div>
 
+        <!-- Department Inbox Card -->
+        <a href="{{ route('queues.department-inbox') }}"
+            class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center text-center hover:shadow-md transition">
+            <div class="h-12 w-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                    </path>
+                </svg>
+            </div>
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Dept. Inbox</h3>
+            <p
+                class="text-3xl font-bold {{ ($metrics['deptInbox'] ?? 0) > 0 ? 'text-amber-600' : 'text-gray-900' }} mt-1">
+                {{ $metrics['deptInbox'] ?? 0 }}
+            </p>
+        </a>
+
         @if (config('digital_module.enabled', true) && isset($metrics['documents']))
             <!-- Phase 12 Digital Attachments Card -->
             <div

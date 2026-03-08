@@ -45,7 +45,26 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('files.dispatch.store', $file->uuid) }}" class="space-y-6">
+                    <form method="POST" action="{{ route('files.dispatch.store', $file->uuid) }}" class="space-y-6"
+                        x-data="{
+                            submitting: false,
+                            selectedDept: '{{ old('to_department_id', '') }}',
+                            selectedUser: '{{ old('to_user_id', '') }}',
+                            users: @js($users->map(fn($u) => ['id' => $u->id, 'name' => $u->name, 'department_id' => $u->department_id, 'dept_code' => $u->department?->code ?? 'N/A'])),
+                            get filteredUsers() {
+                                if (!this.selectedDept) return [];
+                                return this.users.filter(u => u.department_id == this.selectedDept);
+                            },
+                            get dispatchLabel() {
+                                if (!this.selectedDept) return 'Select a department first';
+                                if (this.selectedUser) {
+                                    const user = this.users.find(u => u.id == this.selectedUser);
+                                    return user ? 'Direct dispatch to: ' + user.name : 'Direct dispatch';
+                                }
+                                return 'Dispatch to: Department Inbox';
+                            },
+                            get isDeptInbox() { return this.selectedDept && !this.selectedUser; }
+                        }">
                         @csrf
                         <input type="hidden" name="request_uuid" value="{{ Str::uuid() }}">
 
@@ -53,12 +72,12 @@
                             <div>
                                 <label for="to_department_id" class="block text-sm font-semibold text-[#003B73]">Target
                                     Department <span class="text-red-500">*</span></label>
-                                <select id="to_department_id" name="to_department_id" required
+                                <select id="to_department_id" name="to_department_id" required x-model="selectedDept"
+                                    x-on:change="selectedUser = ''"
                                     class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
                                     <option value="">Select Destination Department...</option>
                                     @foreach ($departments as $dept)
-                                        <option value="{{ $dept->id }}"
-                                            {{ old('to_department_id') == $dept->id ? 'selected' : '' }}>
+                                        <option value="{{ $dept->id }}">
                                             {{ $dept->name }} ({{ $dept->code }})</option>
                                     @endforeach
                                 </select>
@@ -66,20 +85,33 @@
 
                             <div>
                                 <label for="to_user_id" class="block text-sm font-semibold text-[#003B73]">Target
-                                    Recipient <span class="text-red-500">*</span></label>
-                                <select id="to_user_id" name="to_user_id" required
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
-                                    <option value="">Select Target User...</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}"
-                                            {{ old('to_user_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}
-                                            ({{ $user->department?->code ?? 'Unassigned' }})
+                                    Recipient <span class="text-gray-400 text-xs font-normal">(Optional)</span></label>
+                                <select id="to_user_id" name="to_user_id" x-model="selectedUser"
+                                    x-bind:disabled="!selectedDept"
+                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                    <option value="">-- Department Inbox (any officer) --</option>
+                                    <template x-for="user in filteredUsers" :key="user.id">
+                                        <option :value="user.id" x-text="user.name + ' (' + user.dept_code + ')'">
                                         </option>
-                                    @endforeach
+                                    </template>
                                 </select>
-                                <p class="text-xs text-gray-400 mt-1">The physical file must be physically handed to
-                                    this user.</p>
+                                <p class="text-xs text-gray-400 mt-1">Leave empty to dispatch to the department inbox.
+                                    Any officer in the department may acknowledge receipt.</p>
                             </div>
+                        </div>
+
+                        <!-- Dynamic dispatch target label -->
+                        <div class="p-3 rounded border text-sm font-medium"
+                            x-bind:class="isDeptInbox ? 'bg-amber-50 border-amber-200 text-amber-800' :
+                                'bg-blue-50 border-blue-200 text-blue-800'"
+                            x-show="selectedDept" x-cloak>
+                            <span class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span x-text="dispatchLabel"></span>
+                            </span>
                         </div>
 
                         <div>
@@ -96,7 +128,7 @@
                                 class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-sm font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring ring-blue-200 active:text-gray-800 active:bg-gray-50 transition ease-in-out duration-150 mr-4">
                                 Cancel
                             </a>
-                            <button x-data="{ submitting: false }" x-on:click="submitting = true"
+                            <button x-on:click="submitting = true"
                                 x-bind:class="{ 'opacity-50 cursor-not-allowed': submitting }" type="submit"
                                 class="inline-flex items-center px-6 py-2 bg-[#003B73] border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

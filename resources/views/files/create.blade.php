@@ -9,10 +9,11 @@
         <div class="w-full sm:px-6 lg:px-8 space-y-6 flex-1">
             <div class="bg-white p-8 shadow-sm border border-gray-200 rounded-sm">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    <div class="lg:col-span-2">
+                    <div class="lg:col-span-2" x-data="generateForm()">
                         <div class="mb-8 border-b border-gray-100 pb-4">
                             <h3 class="text-lg font-bold text-[#003B73] mb-1">File Metadata</h3>
-                            <p class="text-sm text-gray-500">Register a new physical file into the system to begin formal
+                            <p class="text-sm text-gray-500">Register a new physical file into the system to begin
+                                formal
                                 tracking and custody logging.</p>
                         </div>
 
@@ -44,16 +45,47 @@
                                 </div>
                             @endif
                             @csrf
+
+                            {{-- Title --}}
                             <div>
                                 <label for="title" class="block text-sm font-semibold text-[#003B73]">File Subject /
                                     Title</label>
-                                <input type="text" name="title" id="title"
+                                <input type="text" name="title" id="title" value="{{ old('title') }}"
                                     class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
                                 <p class="mt-1 text-xs text-gray-400">The primary descriptive title written on the
-                                    physical
-                                    folder.</p>
+                                    physical folder.</p>
                             </div>
 
+                            {{-- File Jacket --}}
+                            <div>
+                                <label for="file_jacket_id" class="block text-sm font-semibold text-[#003B73]">File
+                                    Jacket</label>
+                                <div class="flex gap-2 mt-1">
+                                    <select name="file_jacket_id" id="file_jacket_id"
+                                        class="block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                        <option value="">Select Jacket...</option>
+                                        @foreach ($jackets as $jacket)
+                                            <option value="{{ $jacket->id }}"
+                                                {{ (old('file_jacket_id') ?? $preselectedJacketId) == $jacket->id ? 'selected' : '' }}>
+                                                {{ $jacket->jacket_code }} — {{ $jacket->title }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" @click="showJacketModal = true"
+                                        class="flex-shrink-0 inline-flex items-center px-3 py-2 bg-white border border-[#003B73] text-[#003B73] text-xs font-semibold rounded-sm hover:bg-[#003B73] hover:text-white transition">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        New
+                                    </button>
+                                </div>
+                                <p class="mt-1 text-xs text-gray-400">Select the case folder this document belongs to.
+                                </p>
+                            </div>
+
+                            {{-- Department --}}
                             <div>
                                 <label for="department_id"
                                     class="block text-sm font-semibold text-[#003B73]">Originating
@@ -62,11 +94,14 @@
                                     class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
                                     <option value="">Select Department...</option>
                                     @foreach ($departments as $dept)
-                                        <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                                        <option value="{{ $dept->id }}"
+                                            {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                                            {{ $dept->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
+                            {{-- Priority + Confidentiality --}}
                             <div class="grid grid-cols-2 gap-6">
                                 <div>
                                     <label for="priority" class="block text-sm font-semibold text-[#003B73]">Priority
@@ -105,10 +140,61 @@
                                 </div>
                             @endif
 
+                            {{-- Initial Dispatch (Optional) --}}
+                            <div class="pt-6 border-t border-gray-100">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <svg class="w-5 h-5 text-[#003B73]" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                    </svg>
+                                    <h4 class="font-bold text-[#003B73] text-sm uppercase tracking-wider">Initial
+                                        Dispatch (Optional)</h4>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-4">Dispatch this document immediately after creation.
+                                    Leave blank to create without dispatching.</p>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="dispatch_department_id"
+                                            class="block text-sm font-semibold text-[#003B73]">Destination
+                                            Department</label>
+                                        <select id="dispatch_department_id" name="dispatch_department_id"
+                                            x-model="dispatchDeptId" @change="loadUsers()"
+                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                            <option value="">— None —</option>
+                                            @foreach ($departments as $dept)
+                                                <option value="{{ $dept->id }}"
+                                                    {{ old('dispatch_department_id') == $dept->id ? 'selected' : '' }}>
+                                                    {{ $dept->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="dispatch_user_id"
+                                            class="block text-sm font-semibold text-[#003B73]">Specific Officer
+                                            (Optional)</label>
+                                        <select id="dispatch_user_id" name="dispatch_user_id"
+                                            x-model="dispatchUserId" :disabled="!dispatchDeptId"
+                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:text-gray-400">
+                                            <option value="">— Department Inbox —</option>
+                                            <template x-for="user in deptUsers" :key="user.id">
+                                                <option :value="user.id"
+                                                    x-text="user.name + (user.staff_id ? ' (' + user.staff_id + ')' : '')">
+                                                </option>
+                                            </template>
+                                        </select>
+                                        <p class="mt-1 text-xs text-gray-400">If left empty, the document goes to the
+                                            department inbox for any officer to claim.</p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="pt-6 mt-6 border-t border-gray-100 flex justify-end">
                                 <button type="submit"
                                     class="px-6 py-3 bg-[#003B73] border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#003B73] focus:ring-offset-2 transition ease-in-out duration-150 flex items-center shadow-md">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 4v16m8-8H4"></path>
                                     </svg>
@@ -116,6 +202,58 @@
                                 </button>
                             </div>
                         </form>
+
+                        {{-- Inline Jacket Creation Modal --}}
+                        <div x-show="showJacketModal" x-cloak
+                            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                            <div class="relative bg-white rounded-lg shadow-xl max-w-md mx-auto w-full"
+                                @click.away="showJacketModal = false">
+                                <div class="p-6">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <div
+                                            class="h-10 w-10 rounded-full bg-[#003B73]/10 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-[#003B73]" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="1.5"
+                                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-gray-900">Create New File Jacket</h3>
+                                            <p class="text-sm text-gray-500">Department:
+                                                {{ Auth::user()->department->name ?? 'Unknown' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-1">Jacket Title
+                                                <span class="text-red-500">*</span></label>
+                                            <input type="text" x-model="jacketTitle"
+                                                placeholder="e.g. Budget Review 2026"
+                                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-1">Description
+                                                <span class="text-gray-400 font-normal">(Optional)</span></label>
+                                            <textarea x-model="jacketDesc" rows="2" placeholder="Brief description of the case"
+                                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm"></textarea>
+                                        </div>
+                                        <p class="text-xs text-red-600" x-show="jacketError" x-text="jacketError">
+                                        </p>
+                                        <div class="flex justify-end gap-3 pt-2">
+                                            <button type="button" @click="showJacketModal = false"
+                                                class="px-4 py-2 bg-white border border-gray-300 rounded-sm text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
+                                            <button type="button" @click="createJacket()" :disabled="jacketLoading"
+                                                class="px-4 py-2 bg-[#003B73] text-white rounded-sm text-sm font-semibold hover:bg-[#00294d] transition disabled:opacity-50">
+                                                <span x-show="!jacketLoading">Create Jacket</span>
+                                                <span x-show="jacketLoading">Creating...</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Right Side Context Panel -->
@@ -162,6 +300,24 @@
 
                         <div class="pt-5 border-t border-gray-200">
                             <div class="flex items-center mb-3">
+                                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                </svg>
+                                <h4 class="font-bold text-blue-700 text-sm uppercase tracking-wider">Initial Dispatch
+                                </h4>
+                            </div>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                You can optionally dispatch this document immediately after creation.
+                                If you select a <strong>Destination Department</strong>, the file will be sent there
+                                upon generation.
+                                Leave the officer field empty to send to the department inbox.
+                            </p>
+                        </div>
+
+                        <div class="pt-5 border-t border-gray-200">
+                            <div class="flex items-center mb-3">
                                 <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -182,4 +338,84 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function generateForm() {
+            return {
+                showJacketModal: false,
+                jacketTitle: '',
+                jacketDesc: '',
+                jacketError: '',
+                jacketLoading: false,
+                dispatchDeptId: '{{ old('dispatch_department_id', '') }}',
+                dispatchUserId: '{{ old('dispatch_user_id', '') }}',
+                deptUsers: [],
+
+                async loadUsers() {
+                    this.dispatchUserId = '';
+                    this.deptUsers = [];
+                    if (!this.dispatchDeptId) return;
+
+                    try {
+                        const res = await fetch(`/api/departments/${this.dispatchDeptId}/users`);
+                        this.deptUsers = await res.json();
+                    } catch (e) {
+                        console.error('Failed to load users:', e);
+                    }
+                },
+
+                async createJacket() {
+                    if (!this.jacketTitle.trim()) {
+                        this.jacketError = 'Jacket title is required.';
+                        return;
+                    }
+                    this.jacketError = '';
+                    this.jacketLoading = true;
+
+                    try {
+                        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        const res = await fetch('{{ route('file-jackets.store') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': token,
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                title: this.jacketTitle,
+                                description: this.jacketDesc,
+                            }),
+                        });
+
+                        if (!res.ok) {
+                            const err = await res.json();
+                            this.jacketError = err.message || 'Failed to create jacket.';
+                            return;
+                        }
+
+                        const data = await res.json();
+
+                        // Add the new jacket to the dropdown and select it
+                        const select = document.getElementById('file_jacket_id');
+                        const option = new Option(`${data.jacket_code} — ${data.title}`, data.id, true, true);
+                        select.appendChild(option);
+
+                        this.showJacketModal = false;
+                        this.jacketTitle = '';
+                        this.jacketDesc = '';
+                    } catch (e) {
+                        this.jacketError = 'Network error. Please try again.';
+                    } finally {
+                        this.jacketLoading = false;
+                    }
+                },
+
+                init() {
+                    if (this.dispatchDeptId) {
+                        this.loadUsers();
+                    }
+                }
+            };
+        }
+    </script>
 </x-app-layout>

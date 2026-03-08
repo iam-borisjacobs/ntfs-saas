@@ -18,6 +18,8 @@ class FileMovement extends Model
         return [
             'dispatched_at' => 'datetime',
             'received_at' => 'datetime',
+            'closed_at' => 'datetime',
+            'movement_closed' => 'boolean',
         ];
     }
 
@@ -44,5 +46,10 @@ class FileMovement extends Model
     public function toDepartment()
     {
         return $this->belongsTo(Department::class, 'to_department_id');
+    }
+
+    public function closedByUser()
+    {
+        return $this->belongsTo(User::class, 'closed_by');
     }
 }

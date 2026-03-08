@@ -36,6 +36,11 @@ class DashboardController extends Controller
             ->where('is_read', false)
             ->count();
 
+        $deptInboxCount = FileMovement::where('to_department_id', $user->department_id)
+            ->where('acknowledgment_status', 'PENDING')
+            ->whereNull('to_user_id')
+            ->count();
+
         $actionRequiredIds = FileMovement::where('to_user_id', $userId)
             ->where('acknowledgment_status', 'PENDING')
             ->pluck('file_id')
@@ -71,6 +76,7 @@ class DashboardController extends Controller
                 'incoming' => $incomingCount,
                 'pending' => $pendingCount,
                 'notifications' => $unreadNotificationsCount,
+                'deptInbox' => $deptInboxCount,
                 'documents' => $documentCount, // Available via feature flag
             ],
             'activeFiles' => $activeFiles,

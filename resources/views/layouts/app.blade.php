@@ -100,6 +100,19 @@
                                 $q->where('name', '!=', 'IN_TRANSIT');
                             })
                             ->count();
+
+                        // Department Inbox Count: Documents dispatched to the department without a specific user
+                        $deptInboxCount = \App\Models\FileMovement::where('to_department_id', $departmentId)
+                            ->where('acknowledgment_status', 'PENDING')
+                            ->whereNull('to_user_id')
+                            ->count();
+
+                        // My Outgoing Documents Count: Active documents created by the user
+                        $myDocsCount = \App\Models\FileRecord::where('created_by', $userId)
+                            ->whereHas('status', function ($q) {
+                                $q->where('is_terminal', false);
+                            })
+                            ->count();
                     @endphp
 
                     <a href="{{ route('queues.outgoing') }}"
@@ -118,6 +131,24 @@
                         @endif
                     </a>
 
+                    <a href="{{ route('documents.outgoing') }}"
+                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            My Documents
+                        </span>
+                        @if ($myDocsCount > 0)
+                            <span
+                                class="bg-indigo-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $myDocsCount }}</span>
+                        @endif
+                    </a>
+
                     <a href="{{ route('queues.incoming') }}"
                         class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
                         <span class="flex items-center gap-3">
@@ -132,6 +163,34 @@
                             <span
                                 class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $incomingCount }}</span>
                         @endif
+                    </a>
+
+                    <a href="{{ route('queues.department-inbox') }}"
+                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
+                            </svg>
+                            Dept. Inbox
+                        </span>
+                        @if ($deptInboxCount > 0)
+                            <span
+                                class="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $deptInboxCount }}</span>
+                        @endif
+                    </a>
+
+                    <a href="{{ route('file-jackets.index') }}"
+                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
+                            File Jackets
+                        </span>
                     </a>
 
                     <a href="{{ route('queues.pending') }}"

@@ -12,3 +12,10 @@ Artisan::command('inspire', function () {
     ->dailyAt('02:30')
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/digital_prune.log'));
+
+// Phase D: Auto-reminder for overdue documents (48 business hours)
+\Illuminate\Support\Facades\Schedule::command('documents:check-overdue')
+    ->hourly()
+    ->weekdays()
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/overdue_check.log'));

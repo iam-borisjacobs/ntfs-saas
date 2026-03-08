@@ -122,12 +122,13 @@ class FileMovementService
      * Accept a pending file transfer, legally claiming custody.
      *
      * @param int $movementId
+     * @param int|null $fileJacketId Optional jacket to file the document into on receipt
      * @return FileMovement
      * @throws Exception
      */
-    public function receiveFile(int $movementId): FileMovement
+    public function receiveFile(int $movementId, ?int $fileJacketId = null): FileMovement
     {
-        return DB::transaction(function () use ($movementId) {
+        return DB::transaction(function () use ($movementId, $fileJacketId) {
             
             // Look up movement ID (non-blocking) just to get the explicitly protected file_id
             $unlockedMovement = FileMovement::where('id', $movementId)->firstOrFail();
@@ -161,32 +162,34 @@ class FileMovementService
             // 3. Resolve Target Status
             $receivedStatusId = $this->stateService->getStatusIdByName('RECEIVED');
 
-            // 4. Update Movement Ledger
-            $movement->acknowledgment_status = 'ACCEPTED';
-            $movement->received_at = now();
-            $movement->save();
-
-            // 5. For department inbox dispatches, assign the receiver now
+            // 4. For department inbox dispatches, assign the receiver FIRST (while still PENDING)
             if ($movement->to_user_id === null) {
                 $movement->to_user_id = $currentUserId;
-                $movement->save();
-                // Re-lock to get the fresh state after our own update
-                $movement = FileMovement::where('id', $movementId)->lockForUpdate()->firstOrFail();
             }
+
+            // 5. Update Movement Ledger (single atomic save)
+            $movement->acknowledgment_status = 'ACCEPTED';
+            $movement->received_at = now();
+            $movement->file_jacket_id = $fileJacketId;
+            $movement->save();
 
             // 6. Update File Custody
             $file->current_owner_id = $movement->to_user_id;
             $file->current_department_id = $movement->to_department_id;
             $file->status_id = $receivedStatusId;
+            $file->current_file_jacket_id = $fileJacketId;
             $file->save();
 
-            // 6. Audit Log
+            // 7. Audit Log
             DB::table('audit_logs')->insert([
                 'agency_id' => $file->agency_id,
                 'action_type' => 'RECEIVE',
                 'entity_type' => 'file_movements',
                 'entity_id' => $movement->id,
-                'new_values' => json_encode(['acknowledgment_status' => 'ACCEPTED']),
+                'new_values' => json_encode([
+                    'acknowledgment_status' => 'ACCEPTED',
+                    'file_jacket_id' => $fileJacketId,
+                ]),
                 'user_id' => \Illuminate\Support\Facades\Auth::id(),
                 'ip_address' => request()->ip(),
                 'created_at' => now(),
@@ -225,8 +228,15 @@ class FileMovementService
                 throw new Exception("Only pending movements can be rejected.");
             }
 
-            if ($movement->to_user_id !== \Illuminate\Support\Facades\Auth::id()) {
-                throw new Exception("You are not the designated recipient of this file.");
+            if ($movement->to_user_id !== null) {
+                if ($movement->to_user_id !== \Illuminate\Support\Facades\Auth::id()) {
+                    throw new Exception("You are not the designated recipient of this file.");
+                }
+            } else {
+                $userDeptId = \Illuminate\Support\Facades\Auth::user()->department_id;
+                if ($userDeptId !== $movement->to_department_id) {
+                    throw new Exception("You are not a member of the destination department.");
+                }
             }
 
             // 3. Resolve status
@@ -272,6 +282,88 @@ class FileMovementService
             ]);
 
             return $returnMovement;
+        });
+    }
+
+    /**
+     * Close a movement chain after the document has been received.
+     *
+     * @param int $movementId
+     * @param string|null $closureReason
+     * @return FileMovement
+     * @throws Exception
+     */
+    public function closeMovement(int $movementId, ?string $closureReason = null): FileMovement
+    {
+        return DB::transaction(function () use ($movementId, $closureReason) {
+
+            $unlockedMovement = FileMovement::where('id', $movementId)->firstOrFail();
+
+            // 1. Pessimistic lock on file FIRST
+            $file = FileRecord::where('id', $unlockedMovement->file_id)->lockForUpdate()->firstOrFail();
+
+            // 2. Pessimistic lock on movement
+            $movement = FileMovement::where('id', $movementId)->lockForUpdate()->firstOrFail();
+
+            // 3. Validate: must have been received
+            if ($movement->received_at === null) {
+                throw new Exception("Document must be received before it can be closed.");
+            }
+
+            // 4. Validate: not already closed
+            if ($movement->movement_closed) {
+                throw new Exception("This movement is already closed.");
+            }
+
+            // 5. Authorization: only the receiver can close
+            $currentUserId = \Illuminate\Support\Facades\Auth::id();
+            if ($movement->to_user_id !== $currentUserId) {
+                throw new Exception("Only the receiver of the document may close this movement.");
+            }
+
+            // 6. Resolve target status
+            $closedStatusId = $this->stateService->getStatusIdByName('CLOSED');
+
+            // 7. Verify transition is allowed
+            if (!$this->stateService->isTransitionAllowed($file->status_id, $closedStatusId)) {
+                throw new Exception("Invalid state transition to CLOSED from current status.");
+            }
+
+            // 8. Close the movement (trigger allows this specific update on ACCEPTED movements)
+            $movement->movement_closed = true;
+            $movement->closed_at = now();
+            $movement->closed_by = $currentUserId;
+            $movement->closure_reason = $closureReason;
+            $movement->save();
+
+            // 9. Update file status to CLOSED
+            $oldStatusId = $file->status_id;
+            $file->status_id = $closedStatusId;
+            $file->closed_at = now();
+            $file->save();
+
+            // 10. Audit log
+            $auditDetail = $closureReason
+                ? 'Closed with reason: "' . $closureReason . '"'
+                : 'Document movement closed by receiver';
+
+            DB::table('audit_logs')->insert([
+                'agency_id' => $file->agency_id,
+                'action_type' => 'CLOSE',
+                'entity_type' => 'file_movements',
+                'entity_id' => $movement->id,
+                'old_values' => json_encode(['status_id' => $oldStatusId]),
+                'new_values' => json_encode([
+                    'status_id' => $closedStatusId,
+                    'movement_closed' => true,
+                    'detail' => $auditDetail,
+                ]),
+                'user_id' => $currentUserId,
+                'ip_address' => request()->ip(),
+                'created_at' => now(),
+            ]);
+
+            return $movement;
         });
     }
 }

@@ -77,6 +77,40 @@
                 </div>
             </div>
 
+            {{-- Physical Location --}}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2 mb-4">Physical Location</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <span
+                                class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Department</span>
+                            <span
+                                class="block text-md font-medium text-gray-900 mt-1">{{ $file->currentDepartment->name ?? '—' }}</span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Current
+                                Officer</span>
+                            <span
+                                class="block text-md font-medium text-gray-900 mt-1">{{ $file->currentOwner->name ?? '—' }}</span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">File
+                                Jacket</span>
+                            @if ($file->currentFileJacket)
+                                <a href="{{ route('file-jackets.show', $file->currentFileJacket->id) }}"
+                                    class="block text-md font-medium text-[#003B73] mt-1 hover:underline">
+                                    {{ $file->currentFileJacket->jacket_code }}
+                                </a>
+                                <span class="text-xs text-gray-500">{{ $file->currentFileJacket->title }}</span>
+                            @else
+                                <span class="block text-md font-medium text-amber-600 mt-1">Not Yet Filed</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Audit Trail / Ledger --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
@@ -138,6 +172,97 @@
                                             <p class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">
                                                 Remarks</p>
                                             <p class="text-gray-700 italic text-sm">{{ $movement->remarks }}</p>
+                                        </div>
+                                    @endif
+
+                                    {{-- Closure info display --}}
+                                    @if ($movement->movement_closed)
+                                        <div class="mt-4 pt-3 border-t border-gray-200">
+                                            <div class="flex items-center gap-2 bg-gray-100 rounded p-3">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                <div>
+                                                    <p class="text-sm font-semibold text-gray-800">Movement Closed</p>
+                                                    <p class="text-xs text-gray-500">
+                                                        Closed by
+                                                        {{ \App\Models\User::find($movement->closed_by)->name ?? 'Unknown' }}
+                                                        on {{ $movement->closed_at->format('d M Y, H:i') }}
+                                                    </p>
+                                                    @if ($movement->closure_reason)
+                                                        <p class="text-xs text-gray-600 mt-1 italic">
+                                                            "{{ $movement->closure_reason }}"</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    {{-- Close Document action button --}}
+                                    @if (
+                                        !$movement->movement_closed &&
+                                            $movement->received_at !== null &&
+                                            $movement->to_user_id === auth()->id() &&
+                                            $movement->acknowledgment_status === 'ACCEPTED')
+                                        <div class="mt-4 pt-3 border-t border-gray-200 flex justify-end">
+                                            <button type="button"
+                                                onclick="document.getElementById('close-modal-{{ $movement->id }}').classList.remove('hidden')"
+                                                class="inline-flex items-center px-4 py-2 bg-gray-700 border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-800 transition">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                Close Document
+                                            </button>
+                                        </div>
+
+                                        {{-- Close confirmation modal --}}
+                                        <div id="close-modal-{{ $movement->id }}"
+                                            class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                                            <div class="relative bg-white rounded-lg shadow-xl max-w-md mx-auto p-0">
+                                                <div class="p-6">
+                                                    <div class="flex items-center gap-3 mb-4">
+                                                        <div
+                                                            class="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                                            <svg class="w-6 h-6 text-gray-600" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <h3 class="text-lg font-bold text-gray-900">Close Movement
+                                                            </h3>
+                                                            <p class="text-sm text-gray-500">This action is permanent
+                                                                and cannot be undone.</p>
+                                                        </div>
+                                                    </div>
+                                                    <form method="POST"
+                                                        action="{{ route('movements.close', $movement->id) }}">
+                                                        @csrf
+                                                        <div class="mb-4">
+                                                            <label
+                                                                class="block text-sm font-semibold text-gray-700 mb-1">Closure
+                                                                Reason <span
+                                                                    class="text-gray-400 font-normal">(Optional)</span></label>
+                                                            <textarea name="closure_reason" rows="3"
+                                                                class="w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm text-sm"
+                                                                placeholder="Example: Document processed and filed in departmental records."></textarea>
+                                                        </div>
+                                                        <div class="flex justify-end gap-3">
+                                                            <button type="button"
+                                                                onclick="document.getElementById('close-modal-{{ $movement->id }}').classList.add('hidden')"
+                                                                class="px-4 py-2 bg-white border border-gray-300 rounded-sm text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
+                                                            <button type="submit"
+                                                                class="px-4 py-2 bg-gray-700 text-white rounded-sm text-sm font-semibold hover:bg-gray-800 transition">Confirm
+                                                                Closure</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </div>
                                     @endif
                                 </div>

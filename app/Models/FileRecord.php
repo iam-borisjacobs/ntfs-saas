@@ -41,6 +41,21 @@ class FileRecord extends Model
         return $this->belongsTo(User::class, 'current_owner_id');
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function jacket()
+    {
+        return $this->belongsTo(FileJacket::class, 'file_jacket_id');
+    }
+
+    public function currentFileJacket()
+    {
+        return $this->belongsTo(FileJacket::class, 'current_file_jacket_id');
+    }
+
     /**
      * Optional Phase 12 Digital Document Attachments
      */

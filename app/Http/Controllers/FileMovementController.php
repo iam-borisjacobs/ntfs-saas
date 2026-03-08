@@ -47,7 +47,7 @@ class FileMovementController extends Controller
     public function storeDispatch(Request $request, FileRecord $file)
     {
         $validated = $request->validate([
-            'to_user_id' => 'required|exists:users,id',
+            'to_user_id' => 'nullable|exists:users,id',
             'to_department_id' => 'required|exists:departments,id',
             'remarks' => 'nullable|string|max:1000',
         ]);
@@ -58,7 +58,7 @@ class FileMovementController extends Controller
 
             $this->movementService->dispatchFile(
                 $file->id,
-                $validated['to_user_id'],
+                $validated['to_user_id'] ?? null,
                 $validated['to_department_id'],
                 $validated['remarks'] ?? '',
                 $idempotencyKey
@@ -73,13 +73,57 @@ class FileMovementController extends Controller
     }
 
     /**
-     * Accept custody of a dispatched file.
+     * Show the receive form with jacket selection.
      */
-    public function receive(\App\Models\FileMovement $movement)
+    public function showReceive(\App\Models\FileMovement $movement)
     {
+        $movement->load(['file.status', 'fromUser', 'fromDepartment']);
+
+        // Authorization check
+        $currentUserId = \Illuminate\Support\Facades\Auth::id();
+        $userDeptId = \Illuminate\Support\Facades\Auth::user()->department_id;
+
+        if ($movement->to_user_id !== null && $movement->to_user_id !== $currentUserId) {
+            abort(403, 'You are not the designated recipient of this file.');
+        }
+        if ($movement->to_user_id === null && $userDeptId !== $movement->to_department_id) {
+            abort(403, 'You are not a member of the destination department.');
+        }
+        if ($movement->acknowledgment_status !== 'PENDING') {
+            return redirect()->route('queues.pending')->withErrors(['error' => 'This movement is no longer pending.']);
+        }
+
+        // Jackets for the user's department
+        $jackets = \App\Models\FileJacket::where('department_id', $userDeptId)
+            ->where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'jacket_code', 'title']);
+
+        return view('files.receive', compact('movement', 'jackets'));
+    }
+
+    /**
+     * Accept custody of a dispatched file with optional jacket filing.
+     */
+    public function receive(\Illuminate\Http\Request $request, \App\Models\FileMovement $movement)
+    {
+        $request->validate([
+            'file_jacket_id' => 'nullable|exists:file_jackets,id',
+        ]);
+
         try {
-            $this->movementService->receiveFile($movement->id);
-            return redirect()->route('queues.pending')->with('success', 'File custody accepted successfully.');
+            $fileJacketId = $request->file_jacket_id ? (int) $request->file_jacket_id : null;
+            $this->movementService->receiveFile($movement->id, $fileJacketId);
+
+            $msg = 'Document received successfully.';
+            if ($fileJacketId) {
+                $jacket = \App\Models\FileJacket::find($fileJacketId);
+                $msg .= " Filed under jacket: {$jacket->jacket_code}";
+            } else {
+                $msg .= ' Document received but not yet filed.';
+            }
+
+            return redirect()->route('files.show', $movement->file->uuid)->with('success', $msg);
         } catch (Exception $e) {
             \Illuminate\Support\Facades\Log::error('Receive Error: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Failed to accept file: ' . $e->getMessage()]);
@@ -98,6 +142,23 @@ class FileMovementController extends Controller
         } catch (Exception $e) {
             \Illuminate\Support\Facades\Log::error('Reject Error: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Failed to reject file: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Close a movement chain after receipt.
+     */
+    public function close(Request $request, \App\Models\FileMovement $movement)
+    {
+        $request->validate(['closure_reason' => 'nullable|string|max:2000']);
+
+        try {
+            $this->movementService->closeMovement($movement->id, $request->closure_reason);
+            return redirect()->route('files.show', $movement->file->uuid)
+                ->with('success', 'Document movement closed successfully.');
+        } catch (Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Close Error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Failed to close movement: ' . $e->getMessage()]);
         }
     }
 }
