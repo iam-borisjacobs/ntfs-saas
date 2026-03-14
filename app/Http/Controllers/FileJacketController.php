@@ -132,7 +132,7 @@ class FileJacketController extends Controller
     public function show(FileJacket $jacket)
     {
         $this->authorizeJacket($jacket);
-        $jacket->load(['department', 'creator']);
+        $jacket->load(['department', 'creator', 'currentDepartment', 'currentHolder']);
 
         // Documents CURRENTLY physically stored in this jacket
         $files = FileRecord::with(['status', 'currentDepartment', 'currentOwner', 'movements' => function ($q) {
@@ -140,6 +140,12 @@ class FileJacketController extends Controller
             }])
             ->where('current_file_jacket_id', $jacket->id)
             ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Jacket Movements
+        $jacketMovements = $jacket->movements()
+            ->with(['fromDepartment', 'toDepartment', 'fromUser', 'toUser', 'dispatchedBy', 'receivedBy'])
+            ->orderBy('dispatched_at', 'desc')
             ->get();
 
         // Build a timeline from all movements across all files
@@ -169,7 +175,7 @@ class FileJacketController extends Controller
             ->limit(50)
             ->get(['id', 'uuid', 'file_reference_number', 'title']);
 
-        return view('file-jackets.show', compact('jacket', 'files', 'timeline', 'availableFiles'));
+        return view('file-jackets.show', compact('jacket', 'files', 'timeline', 'availableFiles', 'jacketMovements'));
     }
 
     /**

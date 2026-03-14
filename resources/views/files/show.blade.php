@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center gap-6">
             <h2 class="font-semibold text-xl text-[#003B73] leading-tight flex items-center gap-3">
                 <a href="javascript:history.back()" class="text-gray-400 hover:text-[#003B73] transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

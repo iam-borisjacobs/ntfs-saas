@@ -75,7 +75,7 @@ class FileMovementService
             }
 
             // 8. Determine movement type
-            $movementType = $toUserId ? 'DISPATCH' : 'DEPARTMENT_INBOX';
+            $movementType = 'DISPATCH';
 
             // 9. Insert Movement Record
             $movement = FileMovement::create([

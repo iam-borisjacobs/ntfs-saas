@@ -1,17 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-start">
+        <div class="flex items-start gap-6">
             <div>
                 <h2 class="font-semibold text-xl text-[#003B73] leading-tight">{{ __('File Jackets') }}</h2>
                 <p class="text-sm text-gray-500 mt-0.5">{{ Auth::user()->department->name ?? '' }} — Document Registry
                 </p>
             </div>
             <a href="{{ route('file-jackets.create') }}"
-                class="flex-shrink-0 inline-flex items-center px-5 py-2.5 bg-[#003B73] text-white text-sm font-semibold rounded shadow-md hover:bg-[#00294d] hover:shadow-lg transition-all">
+                class="flex-shrink-0 inline-flex items-center px-6 py-3 bg-[#003B73] border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#003B73] focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
-                + Create File Jacket
+                Create File Jacket
             </a>
         </div>
     </x-slot>
@@ -81,25 +81,26 @@
             </div>
 
             {{-- Search / Filter --}}
-            <div class="bg-white p-4 shadow-sm border border-gray-200 rounded-xl">
+            <div class="bg-white p-6 shadow-sm border border-gray-200 rounded-sm">
                 <form method="GET" action="{{ route('file-jackets.index') }}" class="flex flex-wrap items-end gap-4">
                     <div class="flex-1 min-w-[200px]">
                         <label class="block text-xs font-bold text-[#003B73] uppercase mb-1">Search</label>
-                        <div class="relative">
-                            <svg class="w-4 h-4 text-[#003B73] absolute left-3 top-1/2 -translate-y-1/2" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
+                        <div class="relative flex items-center">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-[#003B73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
                             <input type="text" name="search" value="{{ request('search') }}"
                                 placeholder="Search by code or title..."
-                                class="w-full pl-10 rounded-lg border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                                class="w-full pl-10 rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
                         </div>
                     </div>
                     <div class="w-36">
                         <label class="block text-xs font-bold text-[#003B73] uppercase mb-1">Status</label>
                         <select name="status"
-                            class="w-full rounded-lg border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
                             <option value="">All Status</option>
                             <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active
                             </option>
@@ -113,10 +114,10 @@
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Year</label>
                         <input type="number" name="year" value="{{ request('year') }}"
                             placeholder="{{ date('Y') }}"
-                            class="w-full rounded-lg border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
                     </div>
                     <button type="submit"
-                        class="flex-shrink-0 px-5 py-2.5 bg-[#003B73] text-white text-sm font-semibold rounded-lg hover:bg-[#00294d] transition shadow-sm">Filter</button>
+                        class="flex-shrink-0 px-6 py-3 bg-[#003B73] border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#003B73] focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">Filter</button>
                     @if (request()->hasAny(['search', 'status', 'year']))
                         <a href="{{ route('file-jackets.index') }}"
                             class="text-sm text-gray-500 hover:text-gray-700 underline">Clear</a>
@@ -207,9 +208,9 @@
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <a href="{{ route('file-jackets.show', $jacket->id) }}"
-                                            class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-[#003B73] bg-blue-50 rounded-lg hover:bg-[#003B73] hover:text-white transition-all">
+                                            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-sm font-bold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition group">
                                             Open
-                                            <svg class="w-3.5 h-3.5 ml-1 opacity-0 group-hover:opacity-100 transition"
+                                            <svg class="w-3.5 h-3.5 ml-1.5 opacity-0 group-hover:opacity-100 transition"
                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 5l7 7-7 7"></path>
@@ -226,7 +227,7 @@
                     <div class="mt-4">{{ $jackets->appends(request()->query())->links() }}</div>
                 @endif
             @else
-                <div class="bg-white p-16 shadow-sm border border-gray-200 rounded-xl text-center">
+                <div class="bg-white py-10 px-6 shadow-sm border border-gray-200 rounded-sm text-center">
                     <div class="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
                         <svg class="h-8 w-8 text-[#003B73]" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
@@ -244,7 +245,7 @@
                     </p>
                     @if (!request()->hasAny(['search', 'status', 'year']))
                         <a href="{{ route('file-jackets.create') }}"
-                            class="mt-5 inline-flex items-center px-5 py-2.5 bg-[#003B73] text-white text-sm font-semibold rounded-lg shadow hover:bg-[#00294d] transition">
+                            class="mt-5 inline-flex items-center justify-center px-6 py-3 bg-[#003B73] border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#003B73] focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4v16m8-8H4"></path>

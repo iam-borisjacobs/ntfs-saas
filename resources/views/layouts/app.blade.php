@@ -295,7 +295,7 @@
             <!-- Top Header -->
             <header
                 class="h-16 relative z-20 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-8 flex-shrink-0">
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 flex-1 overflow-hidden">
                     <button @click="sidebarOpen = true"
                         class="p-1 flex items-center justify-center text-gray-500 hover:text-gray-700 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 lg:hidden">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -304,9 +304,9 @@
                         </svg>
                     </button>
                     @isset($header)
-                        <h2 class="font-semibold text-lg sm:text-xl text-gray-800 leading-tight">
+                        <div class="flex-1 w-full min-w-0 overflow-hidden text-gray-800">
                             {{ $header }}
-                        </h2>
+                        </div>
                     @endisset
                 </div>
 

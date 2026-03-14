@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center gap-6">
             <h2 class="font-semibold text-xl text-brand-dark leading-tight">
                 {{ __('Your Notifications') }}
             </h2>
