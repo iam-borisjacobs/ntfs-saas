@@ -136,7 +136,7 @@ class FileJacketController extends Controller
 
         // Documents CURRENTLY physically stored in this jacket
         $files = FileRecord::with(['status', 'currentDepartment', 'currentOwner', 'movements' => function ($q) {
-                $q->orderBy('dispatched_at', 'desc');
+                $q->with(['fromUser', 'toUser', 'toDepartment'])->orderBy('dispatched_at', 'desc');
             }])
             ->where('current_file_jacket_id', $jacket->id)
             ->orderBy('created_at', 'desc')
