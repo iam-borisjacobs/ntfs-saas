@@ -39,7 +39,7 @@
 
         <!-- Sidebar -->
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-            class="fixed inset-y-0 left-0 z-40 w-64 bg-[#003B73] text-white flex flex-col h-full transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex-shrink-0 shadow-lg">
+            class="fixed inset-y-0 left-0 z-40 w-[270px] bg-[#003B73] text-white flex flex-col h-full transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex-shrink-0 shadow-lg">
             <div class="p-6 flex flex-col items-center justify-center border-b border-white/10 pb-8">
                 @php
                     $systemLogo = \App\Models\SystemSetting::where('key', 'system_logo_path')->first();
@@ -60,24 +60,33 @@
             </div>
 
             <nav class="flex-1 px-4 space-y-2 overflow-y-auto mt-4">
+                <!-- GENERAL SECTION -->
+                <div class="px-4 mt-10 mb-3">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">General</p>
+                </div>
                 <a href="{{ route('dashboard') }}"
-                    class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded font-medium transition duration-200">
-                    <svg class="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
-                        </path>
+                    class="flex items-center gap-3 px-4 py-2.5 rounded {{ request()->routeIs('dashboard') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
                     </svg>
                     Dashboard
                 </a>
 
-                <div class="pt-4 pb-2">
+                @if (Auth::user()->hasAnyRole(['Super Admin', 'Sys Admin', 'Agency Admin', 'Supervisor', 'Officer', 'Clerk', 'Registry Officer']))
                     <a href="{{ route('files.create') }}"
-                        class="block text-center w-full bg-white text-[#003B73] font-semibold py-2 rounded shadow-sm hover:bg-gray-100 transition duration-200">
+                        class="flex items-center justify-center gap-2 px-4 py-2.5 mt-2 mb-2 bg-white text-[#003B73] rounded font-bold hover:bg-gray-100 transition shadow-sm text-sm">
                         Generate or Create
                     </a>
+                @endif
+<br>
+                <!-- PERSONAL SECTION -->
+                <div class="px-4 mt-10 mb-3">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Personal</p>
                 </div>
 
-                <div class="space-y-1 mt-4">
+                <div class="space-y-1">
                     @php
                         $userId = \Illuminate\Support\Facades\Auth::id();
                         $departmentId = \Illuminate\Support\Facades\Auth::user()->department_id;
@@ -116,7 +125,7 @@
                     @endphp
 
                     <a href="{{ route('queues.outgoing') }}"
-                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        class="flex items-center justify-between px-4 py-2.5 rounded {{ request()->routeIs('queues.outgoing') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                         <span class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
@@ -132,7 +141,7 @@
                     </a>
 
                     <a href="{{ route('documents.outgoing') }}"
-                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        class="flex items-center justify-between px-4 py-2.5 rounded {{ request()->routeIs('documents.outgoing') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                         <span class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
@@ -150,7 +159,7 @@
                     </a>
 
                     <a href="{{ route('queues.incoming') }}"
-                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        class="flex items-center justify-between px-4 py-2.5 rounded {{ request()->routeIs('queues.incoming') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                         <span class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
@@ -165,8 +174,15 @@
                         @endif
                     </a>
 
+                    <br>
+
+                    <!-- DEPARTMENT OPERATIONS SECTION -->
+                    <div class="px-4 mt-10 mb-3">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Department Operations</p>
+                    </div>
+
                     <a href="{{ route('queues.department-inbox') }}"
-                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        class="flex items-center justify-between px-4 py-2.5 rounded {{ request()->routeIs('queues.department-inbox') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                         <span class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
@@ -182,7 +198,7 @@
                     </a>
 
                     <a href="{{ route('file-jackets.index') }}"
-                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        class="flex items-center justify-between px-4 py-2.5 rounded {{ request()->routeIs('file-jackets.*') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                         <span class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
@@ -194,7 +210,7 @@
                     </a>
 
                     <a href="{{ route('queues.pending') }}"
-                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        class="flex items-center justify-between px-4 py-2.5 rounded {{ request()->routeIs('queues.pending') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                         <span class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
@@ -208,9 +224,14 @@
                                 class="bg-gray-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $pendingCount }}</span>
                         @endif
                     </a>
+<br>
+                    <!-- SYSTEM SECTION -->
+                    <div class="px-4 mt-10 mb-3">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">System</p>
+                    </div>
 
                     <a href="{{ route('notifications.index') }}"
-                        class="flex items-center justify-between px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                        class="flex items-center justify-between px-4 py-2.5 rounded {{ request()->routeIs('notifications.*') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                         @php
                             $unreadCountSidebar = \App\Models\Notification::where(
                                 'user_id',
@@ -234,14 +255,14 @@
                         </span>
                     </a>
                 </div>
-
+<br>
                 @role('Sys Admin')
-                    <div class="px-4 mt-8 mb-2">
+                    <div class="px-4 mt-10 mb-2">
                         <p class="text-xs font-semibold text-blue-200 uppercase tracking-wider">Administration</p>
                     </div>
                     <div class="space-y-1">
                         <a href="{{ route('admin.users.index') }}"
-                            class="flex items-center gap-3 px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                            class="flex items-center gap-3 px-4 py-2.5 rounded {{ request()->routeIs('admin.users.*') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -250,7 +271,7 @@
                             Users & Roles
                         </a>
                         <a href="{{ route('admin.departments.index') }}"
-                            class="flex items-center gap-3 px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                            class="flex items-center gap-3 px-4 py-2.5 rounded {{ request()->routeIs('admin.departments.*') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -259,11 +280,11 @@
                             Departments
                         </a>
                         <a href="/admin/settings"
-                            class="flex items-center gap-3 px-4 py-2.5 rounded text-gray-300 hover:bg-white/5 hover:text-white transition group">
+                            class="flex items-center gap-3 px-4 py-2.5 rounded {{ request()->is('admin/settings*') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71-.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z" />
+                                    d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.505-.71-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z" />
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
@@ -290,7 +311,7 @@
         </aside>
 
         <!-- Main Content Wrapper -->
-        <div class="flex-1 flex flex-col h-full overflow-hidden w-full relative">
+        <div class="flex-1 flex flex-col h-full overflow-hidden w-full relative lg:pl-[270px]">
 
             <!-- Top Header -->
             <header

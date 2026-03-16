@@ -30,9 +30,16 @@ class FileGenerationController extends Controller
             ->where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->get(['id', 'jacket_code', 'title']);
+        $closedFiles = FileRecord::where('current_department_id', $userDeptId)
+            ->whereHas('status', function ($query) {
+                $query->where('name', 'CLOSED');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'file_reference_number', 'title']);
+
         $preselectedJacketId = $request->query('file_jacket_id');
 
-        return view('files.create', compact('departments', 'jackets', 'preselectedJacketId'));
+        return view('files.create', compact('departments', 'jackets', 'closedFiles', 'preselectedJacketId'));
     }
 
     /**
@@ -52,7 +59,8 @@ class FileGenerationController extends Controller
             'department_id' => 'required|exists:departments,id',
             'priority_level' => 'required|integer|in:1,2,3',
             'confidentiality_level' => 'required|integer|in:1,2,3',
-            'file_jacket_id' => 'required|exists:file_jackets,id',
+            'file_jacket_id' => 'nullable|exists:file_jackets,id',
+            'reference_file_id' => 'nullable|exists:file_records,id',
             'dispatch_department_id' => 'nullable|exists:departments,id',
             'dispatch_user_id' => 'nullable|exists:users,id',
         ];
@@ -70,31 +78,36 @@ class FileGenerationController extends Controller
             // Generate a unique File Reference Number (simulated logic for now)
             $refNumber = 'NAMA/'.date('Y').'/'.strtoupper(Str::random(6));
 
+            $userDeptId = Auth::user()->department_id;
+
             $file = FileRecord::create([
                 'uuid' => (string) Str::uuid(),
                 'file_reference_number' => $refNumber,
                 'title' => $validated['title'],
-                'originating_department_id' => $validated['department_id'],
-                'current_department_id' => $validated['department_id'],
+                'originating_department_id' => $userDeptId,
+                'current_department_id' => $userDeptId,
                 'current_owner_id' => Auth::id(),
                 'created_by' => Auth::id(),
                 'status_id' => $status->id,
                 'priority_level' => $validated['priority_level'],
                 'confidentiality_level' => $validated['confidentiality_level'],
                 'file_jacket_id' => $validated['file_jacket_id'] ?? null,
+                'reference_file_id' => $validated['reference_file_id'] ?? null,
             ]);
+
+            $isDispatching = $request->filled('dispatch_department_id');
 
             // Create the Genesis movement ledger entry
             $movement = $file->movements()->create([
                 'request_uuid' => (string) Str::uuid(),
                 'from_user_id' => Auth::id(),
-                'to_user_id' => Auth::id(), // Starts on the creator's desk
-                'from_department_id' => $validated['department_id'],
-                'to_department_id' => $validated['department_id'],
-                'movement_type' => 'CREATION',
-                'remarks' => 'File physically generated and logged into the system.',
-                'acknowledgment_status' => 'ACCEPTED', // Genesis is auto-acknowledged
-                'received_at' => now(),
+                'to_user_id' => $isDispatching ? ($request->dispatch_user_id ? (int) $request->dispatch_user_id : null) : Auth::id(),
+                'from_department_id' => $userDeptId,
+                'to_department_id' => $isDispatching ? (int) $request->dispatch_department_id : $userDeptId,
+                'movement_type' => $isDispatching ? 'DISPATCH' : 'CREATION',
+                'remarks' => $isDispatching ? 'Initial dispatch upon file generation.' : 'File physically generated and logged into the system.',
+                'acknowledgment_status' => $isDispatching ? 'PENDING' : 'ACCEPTED',
+                'received_at' => $isDispatching ? null : now(),
             ]);
 
             // Append the digital document optionally inside the Generation transaction
@@ -110,26 +123,35 @@ class FileGenerationController extends Controller
                 );
             }
 
-            // STEP 2 — Optional initial dispatch
+            // STEP 2 — Resolve target status and audit if dispatched
             $successMsg = 'File generated successfully: ' . $refNumber;
-            if ($request->filled('dispatch_department_id')) {
-                $movementService = app(FileMovementService::class);
-                $movementService->dispatchFile(
-                    $file->id,
-                    $request->dispatch_user_id ? (int) $request->dispatch_user_id : null,
-                    (int) $request->dispatch_department_id,
-                    'Initial dispatch upon file generation.',
-                    (string) Str::uuid()
-                );
+            if ($isDispatching) {
+                // Update file status to IN_TRANSIT
+                $inTransitStatusId = \App\Models\Status::where('name', 'IN_TRANSIT')->firstOrFail()->id;
+                $file->status_id = $inTransitStatusId;
+                $file->save();
 
-                $deptName = Department::find($request->dispatch_department_id)->name ?? 'Unknown';
+                $deptName = \App\Models\Department::find($request->dispatch_department_id)->name ?? 'Unknown';
                 $successMsg .= ' — Dispatched to ' . $deptName;
+                
+                $auditDetail = 'Sent to ' . $deptName . ' Department Inbox';
                 if ($request->dispatch_user_id) {
                     $userName = \App\Models\User::find($request->dispatch_user_id)->name ?? 'Unknown';
                     $successMsg .= ', assigned to ' . $userName;
-                } else {
-                    $successMsg .= ' (Department Inbox)';
+                    $auditDetail = 'Sent to ' . $userName . ' (' . $deptName . ')';
                 }
+
+                \Illuminate\Support\Facades\DB::table('audit_logs')->insert([
+                    'agency_id' => Auth::user()->agency_id ?? 1, // Fallback to 1 if not set
+                    'action_type' => 'DISPATCH',
+                    'entity_type' => 'file_movements',
+                    'entity_id' => $movement->id,
+                    'old_values' => json_encode(['status_id' => $status->id]),
+                    'new_values' => json_encode(['status_id' => $inTransitStatusId, 'to_user_id' => $request->dispatch_user_id, 'detail' => $auditDetail]),
+                    'user_id' => Auth::id(),
+                    'ip_address' => request()->ip(),
+                    'created_at' => now(),
+                ]);
             }
 
             DB::commit();

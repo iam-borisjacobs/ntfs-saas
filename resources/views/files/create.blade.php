@@ -46,11 +46,28 @@
                             @endif
                             @csrf
 
+                            {{-- Reference Document (Optional) --}}
+                            <div class="mb-6">
+                                <label for="reference_file_id" class="block text-sm font-semibold text-[#003B73]">Reference
+                                    Document (Optional)</label>
+                                <select id="reference_file_id" name="reference_file_id" @change="handleReferenceSelection($event)"
+                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                    <option value="">— No Reference —</option>
+                                    @foreach ($closedFiles as $closedFile)
+                                        <option value="{{ $closedFile->id }}"
+                                            {{ old('reference_file_id') == $closedFile->id ? 'selected' : '' }}>
+                                            {{ $closedFile->file_reference_number }} — {{ $closedFile->title }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-gray-400">Select a previously closed document that this new file replies to or references.</p>
+                            </div>
+
                             {{-- Title --}}
-                            <div>
+                            <div class="pt-4 border-t border-gray-100">
                                 <label for="title" class="block text-sm font-semibold text-[#003B73]">File Subject /
                                     Title</label>
-                                <input type="text" name="title" id="title" value="{{ old('title') }}"
+                                <input type="text" name="title" id="title" x-model="fileTitle"
                                     class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
                                 <p class="mt-1 text-xs text-gray-400">The primary descriptive title written on the
                                     physical folder.</p>
@@ -85,21 +102,16 @@
                                 </p>
                             </div>
 
-                            {{-- Department --}}
+                            {{-- Department (Automated) --}}
                             <div>
-                                <label for="department_id"
-                                    class="block text-sm font-semibold text-[#003B73]">Originating
+                                <label class="block text-sm font-semibold text-[#003B73]">Originating
                                     Department</label>
-                                <select id="department_id" name="department_id"
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
-                                    <option value="">Select Department...</option>
-                                    @foreach ($departments as $dept)
-                                        <option value="{{ $dept->id }}"
-                                            {{ old('department_id') == $dept->id ? 'selected' : '' }}>
-                                            {{ $dept->name }}</option>
-                                    @endforeach
-                                </select>
+                                <input type="text" disabled value="{{ Auth::user()->department->name ?? 'Unknown' }}"
+                                    class="mt-1 block w-full rounded-sm border-gray-300 bg-gray-50 text-gray-500 shadow-sm cursor-not-allowed">
+                                <input type="hidden" name="department_id" value="{{ Auth::user()->department_id }}">
+                                <p class="mt-1 text-xs text-gray-400">Automatically set to your current department.</p>
                             </div>
+
 
                             {{-- Priority + Confidentiality --}}
                             <div class="grid grid-cols-2 gap-6">
@@ -342,6 +354,7 @@
     <script>
         function generateForm() {
             return {
+                fileTitle: '{{ old('title', '') }}',
                 showJacketModal: false,
                 jacketTitle: '',
                 jacketDesc: '',
@@ -350,6 +363,18 @@
                 dispatchDeptId: '{{ old('dispatch_department_id', '') }}',
                 dispatchUserId: '{{ old('dispatch_user_id', '') }}',
                 deptUsers: [],
+
+                handleReferenceSelection(event) {
+                    const selectedValue = event.target.value;
+                    if (selectedValue) {
+                        // If there is no title or it doesn't start with 'RE:', prefix it.
+                        if (!this.fileTitle) {
+                            this.fileTitle = 'RE: ';
+                        } else if (!this.fileTitle.toUpperCase().startsWith('RE:')) {
+                            this.fileTitle = 'RE: ' + this.fileTitle;
+                        }
+                    }
+                },
 
                 async loadUsers() {
                     this.dispatchUserId = '';

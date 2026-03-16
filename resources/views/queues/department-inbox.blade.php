@@ -41,8 +41,9 @@
                                     <tr class="hover:bg-gray-50 transition border-l-4 border-l-amber-500">
                                         <td class="px-6 py-4 whitespace-nowrap font-mono text-xs text-gray-600">
                                             {{ $movement->file->file_reference_number }}</td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-gray-900 font-medium line-clamp-2">
+                                        <td class="px-6 py-4 max-w-[200px]">
+                                            <div class="text-gray-900 font-medium truncate"
+                                                title="{{ $movement->file->title }}">
                                                 {{ $movement->file->title }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-sm">
@@ -67,11 +68,21 @@
                                             @endif
                                         </td>
                                         <td
-                                            class="px-6 py-4 whitespace-nowrap text-right font-medium flex justify-end space-x-3 items-center">
+                                            class="px-6 py-4 whitespace-nowrap text-right font-medium flex justify-end space-x-2 items-center w-full min-w-max flex-shrink-0">
                                             <a href="{{ route('files.show', $movement->file->uuid) }}"
-                                                class="text-[#003B73] hover:text-blue-900 underline font-semibold px-2">View</a>
+                                                class="inline-flex items-center px-3 py-1.5 bg-[#003B73] border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2 transition ease-in-out duration-150 whitespace-nowrap flex-shrink-0">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                View
+                                            </a>
                                             <a href="{{ route('movements.receive.form', $movement->id) }}"
-                                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                                class="inline-flex items-center px-3 py-1.5 bg-green-600 border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 whitespace-nowrap flex-shrink-0">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"

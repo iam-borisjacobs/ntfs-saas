@@ -24,7 +24,7 @@
         </div>
     </x-slot>
 
-    <div class="py-8 h-full flex flex-col">
+    <div class="py-8 h-full flex flex-col" x-data="jacketActions()">
         <div class="w-full sm:px-6 lg:px-8 space-y-6">
 
             @if (session('success'))
@@ -139,11 +139,11 @@
                     </a>
 
                     @if ($jacket->status === 'active')
-                        <form method="POST" action="{{ route('file-jackets.close', $jacket->id) }}" class="inline">
+                        <form method="POST" action="{{ route('file-jackets.close', $jacket->id) }}" class="inline" x-ref="closeForm">
                             @csrf
-                            <button type="submit"
+                            <button type="button"
                                 class="inline-flex items-center px-3 py-1.5 bg-white border border-gray-400 text-gray-600 text-xs font-semibold rounded-sm hover:bg-gray-100 transition"
-                                onclick="return confirm('Close this jacket? It will stop accepting new documents.');">
+                                @click="openModal('close')">
                                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
@@ -153,11 +153,11 @@
                             </button>
                         </form>
                         <form method="POST" action="{{ route('file-jackets.archive', $jacket->id) }}"
-                            class="inline">
+                            class="inline" x-ref="archiveForm">
                             @csrf
-                            <button type="submit"
+                            <button type="button"
                                 class="inline-flex items-center px-3 py-1.5 bg-white border border-amber-400 text-amber-700 text-xs font-semibold rounded-sm hover:bg-amber-50 transition"
-                                onclick="return confirm('Archive this jacket? It will be moved to long-term storage.');">
+                                @click="openModal('archive')">
                                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -171,11 +171,11 @@
 
                     @if (in_array($jacket->status, ['closed', 'archived']))
                         <form method="POST" action="{{ route('file-jackets.reactivate', $jacket->id) }}"
-                            class="inline">
+                            class="inline" x-ref="reactivateForm">
                             @csrf
-                            <button type="submit"
+                            <button type="button"
                                 class="inline-flex items-center px-3 py-1.5 bg-white border border-green-500 text-green-700 text-xs font-semibold rounded-sm hover:bg-green-50 transition"
-                                onclick="return confirm('Reactivate this jacket?');">
+                                @click="openModal('reactivate')">
                                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -267,20 +267,49 @@
                                         {{ $file->movements->first() ? $file->movements->first()->dispatched_at->format('d M Y') : $file->created_at->format('d M Y') }}
                                     </td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap">
-                                        <div class="flex items-center justify-end gap-2">
+                                        <div class="flex items-center justify-end gap-2" x-data="{ showRemoveModal: false }">
                                             <a href="{{ route('files.show', $file->uuid) }}"
                                                 class="text-[#003B73] hover:underline font-semibold text-xs">View</a>
                                             @if ($jacket->status === 'active')
                                                 <form method="POST"
                                                     action="{{ route('file-jackets.unfile-document', $jacket->id) }}"
-                                                    class="inline">
+                                                    class="inline" x-ref="removeForm">
                                                     @csrf
-                                                    <input type="hidden" name="file_id"
-                                                        value="{{ $file->id }}">
-                                                    <button type="submit"
+                                                    <input type="hidden" name="file_id" value="{{ $file->id }}">
+                                                    <button type="button"
                                                         class="text-red-500 hover:text-red-700 text-xs font-semibold"
-                                                        onclick="return confirm('Remove this document from the jacket?');">Remove</button>
+                                                        @click="showRemoveModal = true">Remove</button>
                                                 </form>
+
+                                                {{-- Inline Remove Confirmation Modal --}}
+                                                <div x-show="showRemoveModal" x-cloak
+                                                    class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
+                                                    x-transition:enter="transition ease-out duration-300"
+                                                    x-transition:enter-start="opacity-0 transform scale-95"
+                                                    x-transition:enter-end="opacity-100 transform scale-100"
+                                                    x-transition:leave="transition ease-in duration-200"
+                                                    x-transition:leave-start="opacity-100 transform scale-100"
+                                                    x-transition:leave-end="opacity-0 transform scale-95">
+                                                    <div class="relative bg-white rounded-lg shadow-2xl max-w-md w-full mx-auto p-6 text-center"
+                                                        @click.away="showRemoveModal = false">
+                                                        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                                                            <svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <h3 class="text-xl font-bold text-gray-900 mb-2">Remove Document</h3>
+                                                        <p class="text-sm text-gray-500 mb-6">Are you sure you want to remove <strong class="font-mono">{{ $file->file_reference_number }}</strong> from this jacket?</p>
+                                                        
+                                                        <div class="flex justify-center gap-3">
+                                                            <button type="button" @click="showRemoveModal = false"
+                                                                class="px-5 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded hover:bg-gray-200 transition">Cancel</button>
+                                                            <button type="button" @click="$refs.removeForm.submit()"
+                                                                class="px-5 py-2.5 bg-red-600 text-white font-semibold rounded hover:bg-red-700 shadow-md transition">
+                                                                Yes, Remove
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             @endif
                                         </div>
                                     </td>
@@ -449,5 +478,66 @@
                 </div>
             @endif
         </div>
+        {{-- Global Confirmation Modal for Jacket Actions --}}
+        <div x-show="showModal" x-cloak
+            class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-95">
+            <div class="relative bg-white rounded-lg shadow-2xl max-w-sm mx-auto w-full p-6 text-center"
+                @click.away="showModal = false">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4"
+                     :class="{'bg-[#003B73]/10 text-[#003B73]': modalType === 'close', 'bg-amber-100 text-amber-600': modalType === 'archive', 'bg-green-100 text-green-600': modalType === 'reactivate'}">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2" x-text="modalTitle"></h3>
+                <p class="text-sm text-gray-500 mb-6" x-text="modalText"></p>
+                
+                <div class="flex justify-center gap-3">
+                    <button type="button" @click="showModal = false"
+                        class="px-5 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded hover:bg-gray-200 transition">Cancel</button>
+                    <button type="button" @click="confirmAction()"
+                        class="px-5 py-2.5 text-white font-semibold rounded shadow-md transition"
+                        :class="{'bg-[#003B73] hover:bg-[#00294d]': modalType === 'close', 'bg-amber-500 hover:bg-amber-600': modalType === 'archive', 'bg-green-600 hover:bg-green-700': modalType === 'reactivate'}">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('jacketActions', () => ({
+                showModal: false,
+                modalType: '',
+                modalTitle: '',
+                modalText: '',
+                confirmAction() {
+                    if (this.modalType === 'close') this.$refs.closeForm.submit();
+                    if (this.modalType === 'archive') this.$refs.archiveForm.submit();
+                    if (this.modalType === 'reactivate') this.$refs.reactivateForm.submit();
+                },
+                openModal(type) {
+                    this.modalType = type;
+                    if (type === 'close') {
+                        this.modalTitle = 'Close Jacket';
+                        this.modalText = 'Close this jacket? It will stop accepting new documents.';
+                    } else if (type === 'archive') {
+                        this.modalTitle = 'Archive Jacket';
+                        this.modalText = 'Archive this jacket? It will be moved to long-term storage.';
+                    } else if (type === 'reactivate') {
+                        this.modalTitle = 'Reactivate Jacket';
+                        this.modalText = 'Reactivate this jacket?';
+                    }
+                    this.showModal = true;
+                }
+            }));
+        });
+    </script>
 </x-app-layout>

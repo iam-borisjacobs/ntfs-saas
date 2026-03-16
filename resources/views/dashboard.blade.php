@@ -4,21 +4,7 @@
     </x-slot>
 
     <!-- Top Metrics Row -->
-    <div class="grid grid-cols-1 md:grid-cols-4 @if (config('digital_module.enabled', true)) lg:grid-cols-5 @endif gap-6 mb-8">
-
-        <!-- Outgoing Card -->
-        <div
-            class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center text-center">
-            <div class="h-12 w-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                    </path>
-                </svg>
-            </div>
-            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Outgoing</h3>
-            <p class="text-3xl font-bold text-gray-900 mt-1">{{ $metrics['outgoing'] }}</p>
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
         <!-- Incoming Card -->
         <div
@@ -76,23 +62,6 @@
                 {{ $metrics['deptInbox'] ?? 0 }}
             </p>
         </a>
-
-        @if (config('digital_module.enabled', true) && isset($metrics['documents']))
-            <!-- Phase 12 Digital Attachments Card -->
-            <div
-                class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-green-50 opacity-50"></div>
-                <div class="h-12 w-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-3">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                </div>
-                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Digital Attachments</h3>
-                <p class="text-3xl font-bold text-green-700 mt-1">{{ $metrics['documents'] }}</p>
-            </div>
-        @endif
 
     </div>
 

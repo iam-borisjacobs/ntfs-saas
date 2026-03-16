@@ -73,6 +73,22 @@
                             <span
                                 class="block text-md font-medium text-gray-900 mt-1">{{ \Carbon\Carbon::parse($file->created_at)->format('d M Y, H:i') }}</span>
                         </div>
+                        
+                        {{-- Reference Document --}}
+                        <div class="md:col-span-2 lg:col-span-3">
+                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Reference Document</span>
+                            @if ($file->reference)
+                                <a href="{{ route('files.show', $file->reference->uuid) }}"
+                                    class="inline-block px-3 py-1.5 mt-1 bg-gray-50 border border-gray-200 rounded text-sm font-medium text-[#003B73] hover:bg-gray-100 hover:text-blue-800 transition">
+                                    <svg class="w-4 h-4 inline-block mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                    </svg>
+                                    {{ $file->reference->file_reference_number }} — {{ $file->reference->title }}
+                                </a>
+                            @else
+                                <span class="block text-md font-medium text-gray-500 mt-1 italic">No reference document</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -202,6 +218,7 @@
 
                                     {{-- Close Document action button --}}
                                     @if (
+                                        $loop->first &&
                                         !$movement->movement_closed &&
                                             $movement->received_at !== null &&
                                             $movement->to_user_id === auth()->id() &&

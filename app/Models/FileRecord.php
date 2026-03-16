@@ -57,6 +57,22 @@ class FileRecord extends Model
     }
 
     /**
+     * Get the document this file is replying to or referencing
+     */
+    public function reference()
+    {
+        return $this->belongsTo(FileRecord::class, 'reference_file_id');
+    }
+
+    /**
+     * Get all documents that replied to or reference this file
+     */
+    public function referencedBy()
+    {
+        return $this->hasMany(FileRecord::class, 'reference_file_id');
+    }
+
+    /**
      * Optional Phase 12 Digital Document Attachments
      */
     public function documents()
