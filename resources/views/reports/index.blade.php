@@ -4,16 +4,6 @@
             <h2 class="font-semibold text-xl text-brand-dark leading-tight">
                 {{ __('Advanced Reporting & Search') }}
             </h2>
-            <div class="flex space-x-2">
-                <a href="{{ route('reports.export', array_merge(request()->query(), ['format' => 'csv'])) }}"
-                    class="px-4 py-2 border border-brand-dark text-brand-dark hover:bg-brand-dark hover:text-white transition rounded-sm text-sm font-semibold tracking-wide">
-                    EXPORT CSV
-                </a>
-                <a href="{{ route('reports.export', array_merge(request()->query(), ['format' => 'pdf'])) }}"
-                    class="px-4 py-2 bg-brand-dark text-white hover:bg-blue-800 transition rounded-sm text-sm font-semibold tracking-wide">
-                    EXPORT PDF
-                </a>
-            </div>
         </div>
     </x-slot>
 
@@ -52,58 +42,99 @@
                         class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded border border-gray-200">
                         <div>
                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Status</label>
-                            <select name="status_id"
-                                class="w-full border-gray-300 rounded focus:border-brand-dark focus:ring focus:ring-brand-dark focus:ring-opacity-50 text-sm">
-                                <option value="">All Statuses</option>
-                                @foreach ($statuses as $status)
-                                    <option value="{{ $status->id }}"
-                                        {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <x-custom-select>
+                                <select name="status_id"
+                                    class="w-full border-gray-300 rounded focus:border-brand-dark focus:ring focus:ring-brand-dark focus:ring-opacity-50 text-sm">
+                                    <option value="">All Statuses</option>
+                                    @foreach ($statuses as $status)
+                                        <option value="{{ $status->id }}"
+                                            {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </x-custom-select>
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Dept Match</label>
+                            <x-custom-select>
+                                <select name="department_match_type"
+                                    class="w-full border-gray-300 rounded focus:border-brand-dark focus:ring-brand-dark focus:border-opacity-50 text-sm">
+                                    <option value="current" {{ request('department_match_type') === 'current' ? 'selected' : '' }}>Presently Here</option>
+                                    <option value="historical" {{ request('department_match_type') === 'historical' ? 'selected' : '' }}>Ever Passed Through</option>
+                                </select>
+                            </x-custom-select>
                         </div>
                         <div>
                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Department</label>
-                            <select name="department_id"
-                                class="w-full border-gray-300 rounded focus:border-brand-dark focus:ring-brand-dark focus:border-opacity-50 text-sm">
-                                <option value="">All Departments</option>
-                                @foreach ($departments as $dept)
-                                    <option value="{{ $dept->id }}"
-                                        {{ request('department_id') == $dept->id ? 'selected' : '' }}>
-                                        {{ $dept->name }}</option>
-                                @endforeach
-                            </select>
+                            <x-custom-select>
+                                <select name="department_id"
+                                    class="w-full border-gray-300 rounded focus:border-brand-dark focus:ring-brand-dark focus:border-opacity-50 text-sm">
+                                    <option value="">All Departments</option>
+                                    @foreach ($departments as $dept)
+                                        <option value="{{ $dept->id }}"
+                                            {{ request('department_id') == $dept->id ? 'selected' : '' }}>
+                                            {{ $dept->name }}</option>
+                                    @endforeach
+                                </select>
+                            </x-custom-select>
                         </div>
                         <div>
                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Priority</label>
-                            <select name="priority_level"
-                                class="w-full border-gray-300 rounded focus:border-brand-dark text-sm">
-                                <option value="">Any</option>
-                                <option value="0" {{ request('priority_level') === '0' ? 'selected' : '' }}>
-                                    Routine</option>
-                                <option value="1" {{ request('priority_level') === '1' ? 'selected' : '' }}>Urgent
-                                </option>
-                                <option value="2" {{ request('priority_level') === '2' ? 'selected' : '' }}>
-                                    Critical</option>
-                            </select>
+                            <x-custom-select>
+                                <select name="priority_level"
+                                    class="w-full border-gray-300 rounded focus:border-brand-dark text-sm">
+                                    <option value="">Any</option>
+                                    <option value="0" {{ request('priority_level') === '0' ? 'selected' : '' }}>
+                                        Routine</option>
+                                    <option value="1" {{ request('priority_level') === '1' ? 'selected' : '' }}>Urgent
+                                    </option>
+                                    <option value="2" {{ request('priority_level') === '2' ? 'selected' : '' }}>
+                                        Critical</option>
+                                </select>
+                            </x-custom-select>
                         </div>
                         <div>
                             <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Has Pending
                                 Actions</label>
-                            <select name="has_pending"
-                                class="w-full border-gray-300 rounded focus:border-brand-dark text-sm">
-                                <option value="">All</option>
-                                <option value="1" {{ request('has_pending') == '1' ? 'selected' : '' }}>Yes
-                                </option>
-                            </select>
+                            <x-custom-select>
+                                <select name="has_pending"
+                                    class="w-full border-gray-300 rounded focus:border-brand-dark text-sm">
+                                    <option value="">All</option>
+                                    <option value="1" {{ request('has_pending') == '1' ? 'selected' : '' }}>Yes
+                                    </option>
+                                </select>
+                             </x-custom-select>
                         </div>
-                        <div class="col-span-4 flex justify-end">
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Date From</label>
+                            <input type="date" name="date_from" value="{{ request('date_from') }}" class="w-full border-gray-300 rounded focus:border-brand-dark focus:ring focus:ring-brand-dark focus:ring-opacity-50 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-gray-500 mb-1">Date To</label>
+                            <input type="date" name="date_to" value="{{ request('date_to') }}" class="w-full border-gray-300 rounded focus:border-brand-dark focus:ring focus:ring-brand-dark focus:ring-opacity-50 text-sm">
+                        </div>
+                        <div class="flex justify-end items-end h-full">
                             <button type="submit"
-                                class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-black transition text-sm">Apply
+                                class="px-4 py-2 bg-gray-800 w-full text-white font-bold tracking-wider uppercase rounded hover:bg-black transition text-sm">Apply
                                 Filters</button>
                         </div>
                     </div>
                 </form>
+            </div>
+
+            <!-- Results Header & Export -->
+            <div class="flex justify-between items-end mb-4">
+                <h3 class="text-lg font-bold text-gray-700">Search Results</h3>
+                <div class="flex space-x-2">
+                    <a href="{{ route('reports.export', array_merge(request()->query(), ['format' => 'csv'])) }}"
+                        class="px-4 py-2 border border-brand-dark text-brand-dark hover:bg-brand-dark hover:text-white transition rounded-sm text-sm font-semibold tracking-wide">
+                        EXPORT CSV
+                    </a>
+                    <a href="{{ route('reports.export', array_merge(request()->query(), ['format' => 'pdf'])) }}"
+                        class="px-4 py-2 bg-brand-dark text-white hover:bg-blue-800 transition rounded-sm text-sm font-semibold tracking-wide shadow-sm">
+                        EXPORT PDF
+                    </a>
+                </div>
             </div>
 
             <!-- Results Table -->
@@ -125,7 +156,7 @@
                                     class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
                                     Status</th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-semibold text-brand-dark uppercase tracking-wider">
+                                    class="px-6 py-3 text-right text-xs font-semibold text-brand-dark uppercase tracking-wider">
                                     Timestamp</th>
                                 <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                             </tr>

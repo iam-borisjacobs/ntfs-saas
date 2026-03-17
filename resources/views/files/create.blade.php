@@ -50,16 +50,18 @@
                             <div class="mb-6">
                                 <label for="reference_file_id" class="block text-sm font-semibold text-[#003B73]">Reference
                                     Document (Optional)</label>
-                                <select id="reference_file_id" name="reference_file_id" @change="handleReferenceSelection($event)"
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
-                                    <option value="">— No Reference —</option>
-                                    @foreach ($closedFiles as $closedFile)
-                                        <option value="{{ $closedFile->id }}"
-                                            {{ old('reference_file_id') == $closedFile->id ? 'selected' : '' }}>
-                                            {{ $closedFile->file_reference_number }} — {{ $closedFile->title }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <x-custom-select>
+                                    <select id="reference_file_id" name="reference_file_id" @change="handleReferenceSelection($event)"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                        <option value="">— No Reference —</option>
+                                        @foreach ($closedFiles as $closedFile)
+                                            <option value="{{ $closedFile->id }}"
+                                                {{ old('reference_file_id') == $closedFile->id ? 'selected' : '' }}>
+                                                {{ $closedFile->file_reference_number }} — {{ $closedFile->title }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </x-custom-select>
                                 <p class="mt-1 text-xs text-gray-400">Select a previously closed document that this new file replies to or references.</p>
                             </div>
 
@@ -78,16 +80,20 @@
                                 <label for="file_jacket_id" class="block text-sm font-semibold text-[#003B73]">File
                                     Jacket</label>
                                 <div class="flex gap-2 mt-1">
-                                    <select name="file_jacket_id" id="file_jacket_id"
-                                        class="block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
-                                        <option value="">Select Jacket...</option>
-                                        @foreach ($jackets as $jacket)
-                                            <option value="{{ $jacket->id }}"
-                                                {{ (old('file_jacket_id') ?? $preselectedJacketId) == $jacket->id ? 'selected' : '' }}>
-                                                {{ $jacket->jacket_code }} — {{ $jacket->title }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <div class="flex-1 w-full min-w-0">
+                                        <x-custom-select>
+                                            <select name="file_jacket_id" id="file_jacket_id"
+                                                class="block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                                <option value="">Select Jacket...</option>
+                                                @foreach ($jackets as $jacket)
+                                                    <option value="{{ $jacket->id }}"
+                                                        {{ (old('file_jacket_id') ?? $preselectedJacketId) == $jacket->id ? 'selected' : '' }}>
+                                                        {{ $jacket->jacket_code }} — {{ $jacket->title }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </x-custom-select>
+                                    </div>
                                     <button type="button" @click="showJacketModal = true"
                                         class="flex-shrink-0 inline-flex items-center px-3 py-2 bg-white border border-[#003B73] text-[#003B73] text-xs font-semibold rounded-sm hover:bg-[#003B73] hover:text-white transition">
                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
@@ -118,23 +124,27 @@
                                 <div>
                                     <label for="priority" class="block text-sm font-semibold text-[#003B73]">Priority
                                         Level</label>
-                                    <select id="priority" name="priority_level"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm">
-                                        <option value="1">1 - Routine</option>
-                                        <option value="2">2 - Urgent</option>
-                                        <option value="3">3 - Critical</option>
-                                    </select>
+                                    <x-custom-select>
+                                        <select id="priority" name="priority_level"
+                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm">
+                                            <option value="1">1 - Routine</option>
+                                            <option value="2">2 - Urgent</option>
+                                            <option value="3">3 - Critical</option>
+                                        </select>
+                                    </x-custom-select>
                                 </div>
                                 <div>
                                     <label for="confidentiality"
                                         class="block text-sm font-semibold text-[#003B73]">Confidentiality
                                         Clearance</label>
-                                    <select id="confidentiality" name="confidentiality_level"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm">
-                                        <option value="1">Level 1 (General)</option>
-                                        <option value="2">Level 2 (Restricted)</option>
-                                        <option value="3">Level 3 (Secret)</option>
-                                    </select>
+                                    <x-custom-select>
+                                        <select id="confidentiality" name="confidentiality_level"
+                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm">
+                                            <option value="1">Level 1 (General)</option>
+                                            <option value="2">Level 2 (Restricted)</option>
+                                            <option value="3">Level 3 (Secret)</option>
+                                        </select>
+                                    </x-custom-select>
                                 </div>
                             </div>
 
@@ -171,31 +181,35 @@
                                         <label for="dispatch_department_id"
                                             class="block text-sm font-semibold text-[#003B73]">Destination
                                             Department</label>
-                                        <select id="dispatch_department_id" name="dispatch_department_id"
-                                            x-model="dispatchDeptId" @change="loadUsers()"
-                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
-                                            <option value="">— None —</option>
-                                            @foreach ($departments as $dept)
-                                                <option value="{{ $dept->id }}"
-                                                    {{ old('dispatch_department_id') == $dept->id ? 'selected' : '' }}>
-                                                    {{ $dept->name }}</option>
-                                            @endforeach
-                                        </select>
+                                        <x-custom-select>
+                                            <select id="dispatch_department_id" name="dispatch_department_id"
+                                                x-model="dispatchDeptId" @change="loadUsers()"
+                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                                <option value="">— None —</option>
+                                                @foreach ($departments as $dept)
+                                                    <option value="{{ $dept->id }}"
+                                                        {{ old('dispatch_department_id') == $dept->id ? 'selected' : '' }}>
+                                                        {{ $dept->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </x-custom-select>
                                     </div>
                                     <div>
                                         <label for="dispatch_user_id"
                                             class="block text-sm font-semibold text-[#003B73]">Specific Officer
                                             (Optional)</label>
-                                        <select id="dispatch_user_id" name="dispatch_user_id"
-                                            x-model="dispatchUserId" :disabled="!dispatchDeptId"
-                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:text-gray-400">
-                                            <option value="">— Department Inbox —</option>
-                                            <template x-for="user in deptUsers" :key="user.id">
-                                                <option :value="user.id"
-                                                    x-text="user.name + (user.staff_id ? ' (' + user.staff_id + ')' : '')">
-                                                </option>
-                                            </template>
-                                        </select>
+                                        <x-custom-select>
+                                            <select id="dispatch_user_id" name="dispatch_user_id"
+                                                x-model="dispatchUserId" :disabled="!dispatchDeptId"
+                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:text-gray-400">
+                                                <option value="">— Department Inbox —</option>
+                                                <template x-for="user in deptUsers" :key="user.id">
+                                                    <option :value="user.id"
+                                                        x-text="user.name + (user.staff_id ? ' (' + user.staff_id + ')' : '')">
+                                                    </option>
+                                                </template>
+                                            </select>
+                                        </x-custom-select>
                                         <p class="mt-1 text-xs text-gray-400">If left empty, the document goes to the
                                             department inbox for any officer to claim.</p>
                                     </div>

@@ -68,7 +68,21 @@ class FileSearchService
         }
 
         if (!empty($filters['department_id'])) {
-            $query->where('current_department_id', $filters['department_id']);
+            $matchType = $filters['department_match_type'] ?? 'current';
+            $deptId = $filters['department_id'];
+
+            if ($matchType === 'historical') {
+                $query->where(function($q) use ($deptId) {
+                    $q->where('current_department_id', $deptId)
+                      ->orWhere('originating_department_id', $deptId)
+                      ->orWhereHas('movements', function($mq) use ($deptId) {
+                          $mq->where('to_department_id', $deptId)
+                             ->orWhere('from_department_id', $deptId);
+                      });
+                });
+            } else {
+                $query->where('current_department_id', $deptId);
+            }
         }
 
         if (!empty($filters['owner_id'])) {

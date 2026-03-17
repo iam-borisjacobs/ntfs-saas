@@ -56,25 +56,29 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Destination Department <span
                                 class="text-red-500">*</span></label>
-                        <select name="to_department_id" x-model="toDeptId" @change="loadUsers()"
-                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
-                            <option value="">Select Department...</option>
-                            @foreach ($departments as $dept)
-                                <option value="{{ $dept->id }}">{{ $dept->name }} ({{ $dept->code }})</option>
-                            @endforeach
-                        </select>
+                        <x-custom-select>
+                            <select name="to_department_id" x-model="toDeptId" @change="loadUsers()"
+                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                                <option value="">Select Department...</option>
+                                @foreach ($departments as $dept)
+                                    <option value="{{ $dept->id }}">{{ $dept->name }} ({{ $dept->code }})</option>
+                                @endforeach
+                            </select>
+                        </x-custom-select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Specific Officer <span
                                 class="text-gray-400 font-normal">(Optional)</span></label>
-                        <select name="to_user_id" x-model="toUserId" :disabled="!toDeptId || loadingUsers"
-                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm disabled:bg-gray-100">
-                            <option value="">Department Inbox (Any Officer)</option>
-                            <template x-for="user in users" :key="user.id">
-                                <option :value="user.id" x-text="`${user.name} (${user.staff_id})`"></option>
-                            </template>
-                        </select>
+                        <x-custom-select>
+                            <select name="to_user_id" x-model="toUserId" :disabled="!toDeptId || loadingUsers"
+                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm disabled:bg-gray-100">
+                                <option value="">Department Inbox (Any Officer)</option>
+                                <template x-for="user in users" :key="user.id">
+                                    <option :value="user.id" x-text="`${user.name} (${user.staff_id})`"></option>
+                                </template>
+                            </select>
+                        </x-custom-select>
                         <p class="text-xs text-gray-400 mt-1">Leave empty to send to the department inbox.</p>
                     </div>
 

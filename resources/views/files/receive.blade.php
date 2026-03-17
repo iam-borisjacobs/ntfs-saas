@@ -91,14 +91,16 @@
                         leave this empty to file later.</p>
 
                     <div class="flex gap-2">
-                        <select name="file_jacket_id" id="file_jacket_id"
-                            class="block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition text-sm">
-                            <option value="">— Not Filing Now —</option>
-                            @foreach ($jackets as $jacket)
-                                <option value="{{ $jacket->id }}">{{ $jacket->jacket_code }} — {{ $jacket->title }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <x-custom-select>
+                            <select name="file_jacket_id" id="file_jacket_id"
+                                class="block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition text-sm">
+                                <option value="">— Not Filing Now —</option>
+                                @foreach ($jackets as $jacket)
+                                    <option value="{{ $jacket->id }}">{{ $jacket->jacket_code }} — {{ $jacket->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </x-custom-select>
                         <button type="button" @click="showJacketModal = true"
                             class="flex-shrink-0 inline-flex items-center px-3 py-2 bg-white border border-[#003B73] text-[#003B73] text-xs font-semibold rounded-sm hover:bg-[#003B73] hover:text-white transition">
                             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -99,16 +99,18 @@
                     </div>
                     <div class="w-36">
                         <label class="block text-xs font-bold text-[#003B73] uppercase mb-1">Status</label>
-                        <select name="status"
-                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
-                            <option value="">All Status</option>
-                            <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active
-                            </option>
-                            <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed
-                            </option>
-                            <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived
-                            </option>
-                        </select>
+                        <x-custom-select>
+                            <select name="status"
+                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                                <option value="">All Status</option>
+                                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active
+                                </option>
+                                <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed
+                                </option>
+                                <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived
+                                </option>
+                            </select>
+                        </x-custom-select>
                     </div>
                     <div class="w-28">
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Year</label>

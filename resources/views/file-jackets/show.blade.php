@@ -336,14 +336,16 @@
                                 </p>
                                 <form method="POST" action="{{ route('file-jackets.file-document', $jacket->id) }}">
                                     @csrf
-                                    <select name="file_id"
-                                        class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm mb-4">
-                                        <option value="">Select Document...</option>
-                                        @foreach ($availableFiles as $af)
-                                            <option value="{{ $af->id }}">{{ $af->file_reference_number }} —
-                                                {{ $af->title }}</option>
-                                        @endforeach
-                                    </select>
+                                    <x-custom-select>
+                                        <select name="file_id"
+                                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm mb-4">
+                                            <option value="">Select Document...</option>
+                                            @foreach ($availableFiles as $af)
+                                                <option value="{{ $af->id }}">{{ $af->file_reference_number }} —
+                                                    {{ $af->title }}</option>
+                                            @endforeach
+                                        </select>
+                                    </x-custom-select>
                                     <div class="flex justify-end gap-3">
                                         <button type="button" @click="showFileModal = false"
                                             class="px-4 py-2 bg-white border border-gray-300 rounded-sm text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>

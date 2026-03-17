@@ -72,29 +72,33 @@
                             <div>
                                 <label for="to_department_id" class="block text-sm font-semibold text-[#003B73]">Target
                                     Department <span class="text-red-500">*</span></label>
-                                <select id="to_department_id" name="to_department_id" required x-model="selectedDept"
-                                    x-on:change="selectedUser = ''"
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
-                                    <option value="">Select Destination Department...</option>
-                                    @foreach ($departments as $dept)
-                                        <option value="{{ $dept->id }}">
-                                            {{ $dept->name }} ({{ $dept->code }})</option>
-                                    @endforeach
-                                </select>
+                                <x-custom-select>
+                                    <select id="to_department_id" name="to_department_id" required x-model="selectedDept"
+                                        x-on:change="selectedUser = ''"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                        <option value="">Select Destination Department...</option>
+                                        @foreach ($departments as $dept)
+                                            <option value="{{ $dept->id }}">
+                                                {{ $dept->name }} ({{ $dept->code }})</option>
+                                        @endforeach
+                                    </select>
+                                </x-custom-select>
                             </div>
 
                             <div>
                                 <label for="to_user_id" class="block text-sm font-semibold text-[#003B73]">Target
                                     Recipient <span class="text-gray-400 text-xs font-normal">(Optional)</span></label>
-                                <select id="to_user_id" name="to_user_id" x-model="selectedUser"
-                                    x-bind:disabled="!selectedDept"
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                    <option value="">-- Department Inbox (any officer) --</option>
-                                    <template x-for="user in filteredUsers" :key="user.id">
-                                        <option :value="user.id" x-text="user.name + ' (' + user.dept_code + ')'">
-                                        </option>
-                                    </template>
-                                </select>
+                                <x-custom-select>
+                                    <select id="to_user_id" name="to_user_id" x-model="selectedUser"
+                                        x-bind:disabled="!selectedDept"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                        <option value="">-- Department Inbox (any officer) --</option>
+                                        <template x-for="user in filteredUsers" :key="user.id">
+                                            <option :value="user.id" x-text="user.name + ' (' + user.dept_code + ')'">
+                                            </option>
+                                        </template>
+                                    </select>
+                                </x-custom-select>
                                 <p class="text-xs text-gray-400 mt-1">Leave empty to dispatch to the department inbox.
                                     Any officer in the department may acknowledge receipt.</p>
                             </div>

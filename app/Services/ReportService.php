@@ -11,7 +11,7 @@ class ReportService
 {
     private FileSearchService $searchService;
 
-    public function __phpconstruct(FileSearchService $searchService)
+    public function __construct(FileSearchService $searchService)
     {
         $this->searchService = $searchService;
     }
@@ -22,7 +22,8 @@ class ReportService
     public function exportToCsv(array $filters)
     {
         // Get the unpaginated builder cleanly 
-        $exportQuery = $this->searchService->executeAdvancedFilters($filters, true);
+        $exportQuery = $this->searchService->executeAdvancedFilters($filters, true)
+                                           ->with(['status', 'currentDepartment', 'currentOwner']);
 
         $tempFile = tmpfile();
         $metaData = stream_get_meta_data($tempFile);
@@ -70,7 +71,9 @@ class ReportService
      */
     public function exportToPdf(array $filters)
     {
-        $files = $this->searchService->executeAdvancedFilters($filters, true)->get();
+        $files = $this->searchService->executeAdvancedFilters($filters, true)
+                                     ->with(['status', 'currentDepartment', 'currentOwner'])
+                                     ->get();
         
         // Pseudo-hash generation before rendering (in reality, hash PDF payload post-render)
         $payloadData = json_encode($files);

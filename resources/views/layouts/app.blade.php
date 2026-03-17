@@ -25,6 +25,29 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        /* Custom Elegant Scrollbar for Sidebar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        /* Firefox support */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.15) rgba(255, 255, 255, 0.02);
+        }
+    </style>
 </head>
 
 <body class="font-sans antialiased text-gray-800 bg-gray-50 flex h-screen overflow-hidden">
@@ -59,7 +82,7 @@
                 @endif
             </div>
 
-            <nav class="flex-1 px-4 space-y-2 overflow-y-auto mt-4">
+            <nav class="flex-1 px-4 space-y-2 overflow-y-auto mt-4 custom-scrollbar">
                 <!-- GENERAL SECTION -->
                 <div class="px-4 mt-10 mb-3">
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">General</p>
@@ -103,10 +126,11 @@
                             ->where('acknowledgment_status', 'PENDING')
                             ->count();
 
-                        // Pending Count: Files currently owned by user but NOT in transit
+                        // Pending Count: Files currently owned by user but NOT in transit and NOT in a terminal state
                         $pendingCount = \App\Models\FileRecord::where('current_owner_id', $userId)
                             ->whereHas('status', function ($q) {
-                                $q->where('name', '!=', 'IN_TRANSIT');
+                                $q->where('is_terminal', false)
+                                  ->where('name', '!=', 'IN_TRANSIT');
                             })
                             ->count();
 
@@ -311,7 +335,7 @@
         </aside>
 
         <!-- Main Content Wrapper -->
-        <div class="flex-1 flex flex-col h-full overflow-hidden w-full relative lg:pl-[270px]">
+        <div class="flex-1 flex flex-col h-full overflow-hidden w-full relative">
 
             <!-- Top Header -->
             <header
@@ -353,6 +377,92 @@
 
         </div>
     </div> <!-- Close the Alpine root div -->
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('customSelectWrapper', () => ({
+                open: false,
+                search: '',
+                options: [],
+                selectedText: '',
+                selectEl: null,
+
+                initSelect(el) {
+                    this.selectEl = el;
+                    if (!this.selectEl) return;
+
+                    // Initial sync
+                    this.updateOptions();
+
+                    // Listen for programmatic changes to the original select
+                    this.selectEl.addEventListener('change', () => {
+                        this.syncSelectedText();
+                    });
+
+                    // Observe for new options added via x-for or Javascript
+                    const observer = new MutationObserver(() => {
+                        this.updateOptions();
+                    });
+                    observer.observe(this.selectEl, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true,
+                        attributeFilter: ['selected']
+                    });
+                },
+
+                updateOptions() {
+                    // Convert HTMLOptionsCollection to array of objects
+                    this.options = Array.from(this.selectEl.options).map(opt => ({
+                        value: opt.value,
+                        text: opt.text,
+                        selected: opt.selected,
+                        disabled: opt.disabled
+                    }));
+                    this.syncSelectedText();
+                },
+
+                syncSelectedText() {
+                    const selectedOpt = Array.from(this.selectEl.options).find(opt => opt.selected);
+                    this.selectedText = selectedOpt ? selectedOpt.text : '';
+                },
+
+                get filteredOptions() {
+                    if (this.search.trim() === '') return this.options;
+                    return this.options.filter(opt =>
+                        opt.text.toLowerCase().includes(this.search.toLowerCase())
+                    );
+                },
+
+                selectOption(value) {
+                    this.selectEl.value = value;
+                    this.selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                    this.selectEl.dispatchEvent(new Event('input', { bubbles: true })); // Trigger x-model
+                    this.close();
+                },
+
+                isSelected(value) {
+                    return this.selectEl.value === value;
+                },
+
+                toggle() {
+                    this.open = !this.open;
+                    if (this.open) {
+                        this.search = '';
+                        // Focus search input after transition if there are enough items
+                        setTimeout(() => {
+                            const searchInput = this.$el.querySelector('input[type="text"]');
+                            if (searchInput) searchInput.focus();
+                        }, 50);
+                    }
+                },
+
+                close() {
+                    this.open = false;
+                }
+            }));
+        });
+    </script>
 </body>
 
 </html>

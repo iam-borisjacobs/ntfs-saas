@@ -392,14 +392,16 @@
                                         <div>
                                             <label for="document_type"
                                                 class="block text-sm font-medium text-gray-700">Document Type</label>
-                                            <select id="document_type" name="document_type" required
-                                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#003B73] focus:border-[#003B73] sm:text-sm rounded-md">
-                                                <option value="Memo">Memo</option>
-                                                <option value="Official Letter">Official Letter</option>
-                                                <option value="Approval">Approval</option>
-                                                <option value="Attachment">Attachment</option>
-                                                <option value="Other">Other</option>
-                                            </select>
+                                            <x-custom-select>
+                                                <select id="document_type" name="document_type" required
+                                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#003B73] focus:border-[#003B73] sm:text-sm rounded-md">
+                                                    <option value="Memo">Memo</option>
+                                                    <option value="Official Letter">Official Letter</option>
+                                                    <option value="Approval">Approval</option>
+                                                    <option value="Attachment">Attachment</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </x-custom-select>
                                         </div>
 
                                         <div>
