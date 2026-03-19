@@ -61,6 +61,33 @@ class DashboardController extends Controller
 
         $escalatedMovements = collect();
 
+        // ── General Pending: preview of top 5 files on user's desk ──
+        $pendingFiles = FileRecord::with(['status'])
+            ->where('current_owner_id', $userId)
+            ->whereNotIn('status_id', [$inTransitStatusId])
+            ->whereHas('status', function($q) {
+                $q->where('is_terminal', false);
+            })
+            ->orderBy('updated_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // ── General Notification: overdue movements (dispatched > 48h, not received) ──
+        $overdueMovements = FileMovement::with(['file', 'fromUser'])
+            ->where('to_user_id', $userId)
+            ->where('acknowledgment_status', 'PENDING')
+            ->where('dispatched_at', '<', now()->subHours(48))
+            ->orderBy('dispatched_at', 'asc')
+            ->limit(5)
+            ->get();
+
+        // ── Recent unread notifications for this user ──
+        $recentNotifications = \App\Models\Notification::where('user_id', $userId)
+            ->where('is_read', false)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         $cache = new \App\Services\CacheService();
         $departments = $cache->getDepartments();
         $statuses = $cache->getStatuses();
@@ -77,10 +104,13 @@ class DashboardController extends Controller
                 'pending' => $pendingCount,
                 'notifications' => $unreadNotificationsCount,
                 'deptInbox' => $deptInboxCount,
-                'documents' => $documentCount, // Available via feature flag
+                'documents' => $documentCount,
             ],
             'activeFiles' => $activeFiles,
             'escalatedMovements' => $escalatedMovements,
+            'pendingFiles' => $pendingFiles,
+            'overdueMovements' => $overdueMovements,
+            'recentNotifications' => $recentNotifications,
             'departments' => $departments,
             'statuses' => $statuses
         ]);

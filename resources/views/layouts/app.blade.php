@@ -319,16 +319,17 @@
             </nav>
 
             <div class="px-4 py-6 border-t border-white/10 space-y-1">
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" class="px-2">
                     @csrf
                     <button type="submit"
-                        class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:text-white w-full text-left transition group">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        class="flex items-center gap-3 px-4 py-2.5 w-full text-left text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 rounded shadow border border-red-400/30 transition-all duration-200 group relative overflow-hidden">
+                        <div class="absolute inset-0 w-full h-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                        <svg class="w-5 h-5 flex-shrink-0 relative z-10" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                         </svg>
-                        Logout
+                        <span class="relative z-10 tracking-widest uppercase text-xs">Secure Logout</span>
                     </button>
                 </form>
             </div>
@@ -371,8 +372,14 @@
             </header>
 
             <!-- Scrollable Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-[#F4F7F9] p-6 lg:p-8">
-                {{ $slot }}
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-[#F4F7F9] flex flex-col relative w-full">
+                <div class="p-6 lg:p-8 flex-1 w-full max-w-full overflow-x-hidden">
+                    {{ $slot }}
+                </div>
+                <!-- Universal Security Footer -->
+                <div class="w-full text-center py-5 text-xs font-semibold text-gray-400 bg-[#F4F7F9] mt-auto uppercase tracking-wide">
+                    All actions are logged and subject to review ({{ \Carbon\Carbon::now()->format('Y') }})
+                </div>
             </main>
 
         </div>
@@ -449,11 +456,34 @@
                     this.open = !this.open;
                     if (this.open) {
                         this.search = '';
-                        // Focus search input after transition if there are enough items
-                        setTimeout(() => {
+                        this.$nextTick(() => {
+                            this.positionDropdown();
                             const searchInput = this.$el.querySelector('input[type="text"]');
                             if (searchInput) searchInput.focus();
-                        }, 50);
+                        });
+                    }
+                },
+
+                positionDropdown() {
+                    const btn = this.$refs.triggerBtn;
+                    const panel = this.$refs.dropdownPanel;
+                    if (!btn || !panel) return;
+                    
+                    const rect = btn.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    const spaceBelow = viewportHeight - rect.bottom;
+                    const panelMaxH = 280;
+                    
+                    panel.style.width = rect.width + 'px';
+                    panel.style.left = rect.left + 'px';
+                    
+                    // If space below is less than panel height, open upwards
+                    if (spaceBelow < panelMaxH && rect.top > spaceBelow) {
+                        panel.style.bottom = (viewportHeight - rect.top) + 'px';
+                        panel.style.top = 'auto';
+                    } else {
+                        panel.style.top = rect.bottom + 'px';
+                        panel.style.bottom = 'auto';
                     }
                 },
 

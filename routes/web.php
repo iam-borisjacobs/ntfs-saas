@@ -73,6 +73,12 @@ Route::middleware(['auth', 'throttle:60,1', \App\Http\Middleware\CheckAccountSta
     Route::post('/documents/{document}/version', [\App\Http\Controllers\DocumentController::class, 'updateVersion'])->name('documents.update-version');
     Route::get('/documents/{document}/download', [\App\Http\Controllers\DocumentController::class, 'download'])->name('documents.download');
 
+    // Reminders
+    Route::get('/api/reminders', [\App\Http\Controllers\ReminderController::class, 'index'])->name('api.reminders.index');
+    Route::post('/api/reminders', [\App\Http\Controllers\ReminderController::class, 'store'])->name('api.reminders.store');
+    Route::put('/api/reminders/{reminder}/status', [\App\Http\Controllers\ReminderController::class, 'updateStatus'])->name('api.reminders.status');
+    Route::delete('/api/reminders/{reminder}', [\App\Http\Controllers\ReminderController::class, 'destroy'])->name('api.reminders.destroy');
+
     // Administration & Settings
     Route::prefix('admin')->name('admin.')->group(function () {
         // Departments

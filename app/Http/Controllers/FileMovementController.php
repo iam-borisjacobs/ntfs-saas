@@ -37,8 +37,9 @@ class FileMovementController extends Controller
         // Fetch users and departments for the searchable dropdowns
         $users = User::with('department')->where('is_active', true)->where('id', '!=', \Illuminate\Support\Facades\Auth::id())->orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
+        $stations = \App\Models\Station::orderBy('name')->get();
 
-        return view('files.dispatch', compact('file', 'users', 'departments'));
+        return view('files.dispatch', compact('file', 'users', 'departments', 'stations'));
     }
 
     /**

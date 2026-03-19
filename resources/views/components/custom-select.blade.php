@@ -5,7 +5,7 @@
     </div>
 
     {{-- Custom Styled Dropdown Button --}}
-    <button type="button" @click="toggle()" @click.away="close()"
+    <button type="button" @click="toggle()" x-ref="triggerBtn"
         class="relative w-full bg-white border border-gray-300 rounded-sm shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-[#003B73] focus:border-[#003B73] sm:text-sm transition ease-in-out duration-150"
         aria-haspopup="listbox" :aria-expanded="open" aria-labelledby="listbox-label">
         
@@ -23,14 +23,20 @@
         </span>
     </button>
 
-    {{-- Custom Dropdown List --}}
-    <div x-show="open" x-transition:leave="transition ease-in duration-100"
+    {{-- Custom Dropdown List (fixed position to escape overflow parents) --}}
+    <div x-show="open" x-cloak
+        x-transition:leave="transition ease-in duration-100"
         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-        class="absolute z-50 mt-1 w-full bg-white shadow-lg max-h-60 rounded-sm py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
-        style="display: none;">
+        x-ref="dropdownPanel"
+        x-effect="if (open) { $nextTick(() => { positionDropdown() }) }"
+        @scroll.window.debounce.50ms="if (open) positionDropdown()"
+        @resize.window.debounce.100ms="if (open) positionDropdown()"
+        @click.away="close()"
+        class="fixed z-[9999] bg-white shadow-lg rounded-sm py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+        style="max-height: 280px; overflow-y: auto;">
         
         {{-- Optional Search Bar --}}
-        <div class="px-2 pb-2 pt-1 border-b border-gray-100 sticky top-0 bg-white" x-show="options.length > 8">
+        <div class="px-2 pb-2 pt-1 border-b border-gray-100 sticky top-0 bg-white z-10" x-show="options.length > 8">
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -48,9 +48,15 @@
                     <form method="POST" action="{{ route('files.dispatch.store', $file->uuid) }}" class="space-y-6"
                         x-data="{
                             submitting: false,
+                            selectedStation: '{{ old('to_station_id', '') }}',
                             selectedDept: '{{ old('to_department_id', '') }}',
                             selectedUser: '{{ old('to_user_id', '') }}',
+                            departments: {{ $departments->toJson() }},
                             users: @js($users->map(fn($u) => ['id' => $u->id, 'name' => $u->name, 'department_id' => $u->department_id, 'dept_code' => $u->department?->code ?? 'N/A'])),
+                            get filteredDepartments() {
+                                if (!this.selectedStation) return [];
+                                return this.departments.filter(d => d.station_id == this.selectedStation);
+                            },
                             get filteredUsers() {
                                 if (!this.selectedDept) return [];
                                 return this.users.filter(u => u.department_id == this.selectedDept);
@@ -68,19 +74,34 @@
                         @csrf
                         <input type="hidden" name="request_uuid" value="{{ Str::uuid() }}">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="to_station_id" class="block text-sm font-semibold text-[#003B73]">Target
+                                    Station <span class="text-red-500">*</span></label>
+                                <x-custom-select>
+                                    <select id="to_station_id" name="to_station_id" required x-model="selectedStation"
+                                        x-on:change="selectedDept = ''; selectedUser = ''"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                        <option value="">Select Destination Station...</option>
+                                        @foreach ($stations as $station)
+                                            <option value="{{ $station->id }}">{{ $station->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </x-custom-select>
+                            </div>
+
                             <div>
                                 <label for="to_department_id" class="block text-sm font-semibold text-[#003B73]">Target
                                     Department <span class="text-red-500">*</span></label>
                                 <x-custom-select>
                                     <select id="to_department_id" name="to_department_id" required x-model="selectedDept"
-                                        x-on:change="selectedUser = ''"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                        x-on:change="selectedUser = ''" x-bind:disabled="!selectedStation"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:cursor-not-allowed">
                                         <option value="">Select Destination Department...</option>
-                                        @foreach ($departments as $dept)
-                                            <option value="{{ $dept->id }}">
-                                                {{ $dept->name }} ({{ $dept->code }})</option>
-                                        @endforeach
+                                        <template x-for="dept in filteredDepartments" :key="dept.id">
+                                            <option :value="dept.id" x-text="dept.name + ' (' + dept.code + ')'">
+                                            </option>
+                                        </template>
                                     </select>
                                 </x-custom-select>
                             </div>

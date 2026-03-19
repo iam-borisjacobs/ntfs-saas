@@ -9,7 +9,11 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white p-8 shadow-sm border border-gray-200">
                 <form action="{{ isset($user) ? route('admin.users.update', $user->id) : route('admin.users.store') }}"
-                    method="POST" class="space-y-6">
+                    method="POST" class="space-y-6"
+                    x-data="{
+                        selectedStation: '{{ old('station_id', $user->department->station_id ?? '') }}',
+                        departments: {{ $departments->toJson() }}
+                    }">
                     @csrf
                     @if (isset($user))
                         @method('PUT')
@@ -80,18 +84,31 @@
                             <h3 class="text-lg font-bold text-gray-900 border-b pb-2">Clearance & Routing</h3>
 
                             <div>
+                                <label for="station_id"
+                                    class="block text-sm font-semibold text-[#003B73]">Station / Location</label>
+                                <x-custom-select>
+                                    <select id="station_id" name="station_id" x-model="selectedStation"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition"
+                                        required>
+                                        <option value="">Select Station...</option>
+                                        @foreach ($stations as $station)
+                                            <option value="{{ $station->id }}">{{ $station->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </x-custom-select>
+                            </div>
+
+                            <div>
                                 <label for="department_id"
                                     class="block text-sm font-semibold text-[#003B73]">Department</label>
                                 <x-custom-select>
                                     <select id="department_id" name="department_id"
                                         class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition"
-                                        required>
+                                        required x-bind:disabled="!selectedStation">
                                         <option value="">Select Department...</option>
-                                        @foreach ($departments as $dept)
-                                            <option value="{{ $dept->id }}"
-                                                {{ old('department_id', $user->department_id ?? '') == $dept->id ? 'selected' : '' }}>
-                                                {{ $dept->name }}</option>
-                                        @endforeach
+                                        <template x-for="dept in departments.filter(d => d.station_id == selectedStation)" :key="dept.id">
+                                            <option :value="dept.id" x-text="dept.name" :selected="dept.id == {{ old('department_id', $user->department_id ?? 'null') }}"></option>
+                                        </template>
                                     </select>
                                 </x-custom-select>
                                 @error('department_id')

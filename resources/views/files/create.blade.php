@@ -108,14 +108,23 @@
                                 </p>
                             </div>
 
-                            {{-- Department (Automated) --}}
-                            <div>
-                                <label class="block text-sm font-semibold text-[#003B73]">Originating
-                                    Department</label>
-                                <input type="text" disabled value="{{ Auth::user()->department->name ?? 'Unknown' }}"
-                                    class="mt-1 block w-full rounded-sm border-gray-300 bg-gray-50 text-gray-500 shadow-sm cursor-not-allowed">
-                                <input type="hidden" name="department_id" value="{{ Auth::user()->department_id }}">
-                                <p class="mt-1 text-xs text-gray-400">Automatically set to your current department.</p>
+                            {{-- Department & Station (Automated Origin Lock) --}}
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-[#003B73]">Originating
+                                        Station</label>
+                                    <input type="text" disabled value="{{ Auth::user()->department->station->name ?? 'Unknown' }}"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 bg-gray-50 text-gray-500 shadow-sm cursor-not-allowed">
+                                    <p class="mt-1 text-xs text-gray-400">Locked to your assigned region.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-[#003B73]">Originating
+                                        Department</label>
+                                    <input type="text" disabled value="{{ Auth::user()->department->name ?? 'Unknown' }}"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 bg-gray-50 text-gray-500 shadow-sm cursor-not-allowed">
+                                    <input type="hidden" name="department_id" value="{{ Auth::user()->department_id }}">
+                                    <p class="mt-1 text-xs text-gray-400">Locked to your current department.</p>
+                                </div>
                             </div>
 
 
@@ -176,21 +185,34 @@
                                 <p class="text-xs text-gray-500 mb-4">Dispatch this document immediately after creation.
                                     Leave blank to create without dispatching.</p>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label for="dispatch_station_id"
+                                            class="block text-sm font-semibold text-[#003B73]">Destination
+                                            Station</label>
+                                        <x-custom-select>
+                                            <select id="dispatch_station_id" name="dispatch_station_id"
+                                                x-model="dispatchStationId" @change="resetDispatchDept()"
+                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                                <option value="">— None —</option>
+                                                @foreach ($stations as $station)
+                                                    <option value="{{ $station->id }}">{{ $station->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </x-custom-select>
+                                    </div>
                                     <div>
                                         <label for="dispatch_department_id"
                                             class="block text-sm font-semibold text-[#003B73]">Destination
                                             Department</label>
                                         <x-custom-select>
                                             <select id="dispatch_department_id" name="dispatch_department_id"
-                                                x-model="dispatchDeptId" @change="loadUsers()"
-                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                                x-model="dispatchDeptId" @change="loadUsers()" :disabled="!dispatchStationId"
+                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:text-gray-400">
                                                 <option value="">— None —</option>
-                                                @foreach ($departments as $dept)
-                                                    <option value="{{ $dept->id }}"
-                                                        {{ old('dispatch_department_id') == $dept->id ? 'selected' : '' }}>
-                                                        {{ $dept->name }}</option>
-                                                @endforeach
+                                                <template x-for="dept in departments.filter(d => d.station_id == dispatchStationId)" :key="dept.id">
+                                                    <option :value="dept.id" x-text="dept.name" :selected="dept.id == {{ old('dispatch_department_id', 'null') }}"></option>
+                                                </template>
                                             </select>
                                         </x-custom-select>
                                     </div>
@@ -374,6 +396,8 @@
                 jacketDesc: '',
                 jacketError: '',
                 jacketLoading: false,
+                departments: {{ $departments->toJson() }},
+                dispatchStationId: '{{ old('dispatch_station_id', '') }}',
                 dispatchDeptId: '{{ old('dispatch_department_id', '') }}',
                 dispatchUserId: '{{ old('dispatch_user_id', '') }}',
                 deptUsers: [],
@@ -401,6 +425,12 @@
                     } catch (e) {
                         console.error('Failed to load users:', e);
                     }
+                },
+
+                resetDispatchDept() {
+                    this.dispatchDeptId = '';
+                    this.dispatchUserId = '';
+                    this.deptUsers = [];
                 },
 
                 async createJacket() {

@@ -18,10 +18,11 @@ class UserController extends Controller
 
     public function create()
     {
+        $stations = \App\Models\Station::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
         // Get all Spatie roles
         $roles = \Spatie\Permission\Models\Role::orderBy('name')->get();
-        return view('admin.users.create', compact('departments', 'roles'));
+        return view('admin.users.create', compact('stations', 'departments', 'roles'));
     }
 
     public function store(Request $request)
@@ -54,9 +55,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $stations = \App\Models\Station::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
         $roles = \Spatie\Permission\Models\Role::orderBy('name')->get();
-        return view('admin.users.edit', compact('user', 'departments', 'roles'));
+        return view('admin.users.edit', compact('user', 'stations', 'departments', 'roles'));
     }
 
     public function update(Request $request, User $user)

@@ -24,6 +24,7 @@ class FileGenerationController extends Controller
             abort(403, 'Unauthorized action. Clerks cannot create files.');
         }
 
+        $stations = \App\Models\Station::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
         $userDeptId = Auth::user()->department_id;
         $jackets = FileJacket::where('department_id', $userDeptId)
@@ -39,7 +40,7 @@ class FileGenerationController extends Controller
 
         $preselectedJacketId = $request->query('file_jacket_id');
 
-        return view('files.create', compact('departments', 'jackets', 'closedFiles', 'preselectedJacketId'));
+        return view('files.create', compact('stations', 'departments', 'jackets', 'closedFiles', 'preselectedJacketId'));
     }
 
     /**
