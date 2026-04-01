@@ -57,7 +57,7 @@
                                         @foreach ($closedFiles as $closedFile)
                                             <option value="{{ $closedFile->id }}"
                                                 {{ old('reference_file_id') == $closedFile->id ? 'selected' : '' }}>
-                                                {{ $closedFile->file_reference_number }} — {{ $closedFile->title }}
+                                                RE: {{ $closedFile->file_reference_number }} — {{ $closedFile->title }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -227,7 +227,7 @@
                                                 <option value="">— Department Inbox —</option>
                                                 <template x-for="user in deptUsers" :key="user.id">
                                                     <option :value="user.id"
-                                                        x-text="user.name + (user.staff_id ? ' (' + user.staff_id + ')' : '')">
+                                                        x-text="user.name + (user.system_identifier ? ' (' + user.system_identifier + ')' : '')">
                                                     </option>
                                                 </template>
                                             </select>
@@ -396,21 +396,18 @@
                 jacketDesc: '',
                 jacketError: '',
                 jacketLoading: false,
-                departments: {{ $departments->toJson() }},
+                departments: @json($departments),
                 dispatchStationId: '{{ old('dispatch_station_id', '') }}',
                 dispatchDeptId: '{{ old('dispatch_department_id', '') }}',
                 dispatchUserId: '{{ old('dispatch_user_id', '') }}',
                 deptUsers: [],
 
                 handleReferenceSelection(event) {
-                    const selectedValue = event.target.value;
+                    const selectElement = event.target;
+                    const selectedValue = selectElement.value;
                     if (selectedValue) {
-                        // If there is no title or it doesn't start with 'RE:', prefix it.
-                        if (!this.fileTitle) {
-                            this.fileTitle = 'RE: ';
-                        } else if (!this.fileTitle.toUpperCase().startsWith('RE:')) {
-                            this.fileTitle = 'RE: ' + this.fileTitle;
-                        }
+                        const selectedText = selectElement.options[selectElement.selectedIndex].text.trim();
+                        this.fileTitle = selectedText;
                     }
                 },
 

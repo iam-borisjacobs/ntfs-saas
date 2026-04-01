@@ -20,7 +20,7 @@ class FileGenerationController extends Controller
      */
     public function create(Request $request)
     {
-        if (! Auth::user() || ! Auth::user()->hasAnyRole(['Super Admin', 'Sys Admin', 'Agency Admin', 'Supervisor', 'Officer', 'Clerk', 'Registry Officer'])) {
+        if (! Auth::user() || ! Auth::user()->hasAnyRole(['Super Admin', 'Sys Admin', 'Agency Admin', 'Supervisor', 'Officer', 'Registry Officer'])) {
             abort(403, 'Unauthorized action. Clerks cannot create files.');
         }
 
@@ -48,7 +48,7 @@ class FileGenerationController extends Controller
      */
     public function store(Request $request, DocumentService $documentService)
     {
-        if (! Auth::user() || ! Auth::user()->hasAnyRole(['Super Admin', 'Sys Admin', 'Agency Admin', 'Supervisor', 'Officer', 'Clerk', 'Registry Officer'])) {
+        if (! Auth::user() || ! Auth::user()->hasAnyRole(['Super Admin', 'Sys Admin', 'Agency Admin', 'Supervisor', 'Officer', 'Registry Officer'])) {
             abort(403, 'Unauthorized action. Clerks cannot create files.');
         }
 

@@ -75,7 +75,7 @@
                                 class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm disabled:bg-gray-100">
                                 <option value="">Department Inbox (Any Officer)</option>
                                 <template x-for="user in users" :key="user.id">
-                                    <option :value="user.id" x-text="`${user.name} (${user.staff_id})`"></option>
+                                    <option :value="user.id" x-text="`${user.name} (${user.system_identifier || 'Unknown ID'})`"></option>
                                 </template>
                             </select>
                         </x-custom-select>

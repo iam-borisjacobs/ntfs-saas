@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="w-full sm:px-6 lg:px-8 space-y-6" x-data="userForm()">
             <div class="bg-white p-8 shadow-sm border border-gray-200">
                 <form action="{{ isset($user) ? route('admin.users.update', $user->id) : route('admin.users.store') }}"
                     method="POST" class="space-y-6">
@@ -80,18 +80,33 @@
                             <h3 class="text-lg font-bold text-gray-900 border-b pb-2">Clearance & Routing</h3>
 
                             <div>
+                                <label for="station_id"
+                                    class="block text-sm font-semibold text-[#003B73]">Geographic Station</label>
+                                <x-custom-select>
+                                    <select id="station_id" name="station_id" x-model="stationId" @change="departmentId = ''"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition">
+                                        <option value="">Select Station...</option>
+                                        @foreach ($stations as $station)
+                                            <option value="{{ $station->id }}"
+                                                {{ (old('station_id', isset($user) ? ($user->department->station_id ?? '') : '')) == $station->id ? 'selected' : '' }}>
+                                                {{ $station->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </x-custom-select>
+                            </div>
+
+                            <div>
                                 <label for="department_id"
                                     class="block text-sm font-semibold text-[#003B73]">Department</label>
                                 <x-custom-select>
-                                    <select id="department_id" name="department_id"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition"
+                                    <select id="department_id" name="department_id" x-model="departmentId" :disabled="!stationId"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition disabled:bg-gray-100 disabled:text-gray-400"
                                         required>
                                         <option value="">Select Department...</option>
-                                        @foreach ($departments as $dept)
-                                            <option value="{{ $dept->id }}"
-                                                {{ old('department_id', $user->department_id ?? '') == $dept->id ? 'selected' : '' }}>
-                                                {{ $dept->name }}</option>
-                                        @endforeach
+                                        <template x-for="dept in departments.filter(d => d.station_id == stationId)" :key="dept.id">
+                                            <option :value="dept.id" x-text="dept.name" :selected="dept.id == initialDepartmentId"></option>
+                                        </template>
                                     </select>
                                 </x-custom-select>
                                 @error('department_id')
@@ -179,4 +194,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('userForm', () => ({
+                departments: @json($departments),
+                stationId: '{{ old('station_id', isset($user) ? ($user->department->station_id ?? '') : '') }}',
+                departmentId: '{{ old('department_id', $user->department_id ?? '') }}',
+                initialDepartmentId: '{{ old('department_id', $user->department_id ?? '') }}',
+                
+                init() {
+                    if (this.departmentId && !this.stationId) {
+                        const dept = this.departments.find(d => d.id == this.departmentId);
+                        if (dept) this.stationId = dept.station_id;
+                    }
+                }
+            }));
+        });
+    </script>
 </x-app-layout>

@@ -57,7 +57,7 @@ Route::middleware(['auth', 'throttle:60,1', \App\Http\Middleware\CheckAccountSta
         return $department->users()
             ->where('is_active', true)
             ->orderBy('name')
-            ->get(['id', 'name', 'staff_id']);
+            ->get(['id', 'name', 'system_identifier']);
     })->name('api.department.users');
 
     // File Movements (Dispatch, Receive, Return)

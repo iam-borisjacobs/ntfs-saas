@@ -127,11 +127,11 @@
                 <h3 class="text-lg font-bold text-gray-700">Search Results</h3>
                 <div class="flex space-x-2">
                     <a href="{{ route('reports.export', array_merge(request()->query(), ['format' => 'csv'])) }}"
-                        class="px-4 py-2 border border-brand-dark text-brand-dark hover:bg-brand-dark hover:text-white transition rounded-sm text-sm font-semibold tracking-wide">
+                        class="px-4 py-2 border border-[#003B73] text-[#003B73] hover:bg-[#003B73] hover:text-white transition rounded-sm text-sm font-semibold tracking-wide">
                         EXPORT CSV
                     </a>
                     <a href="{{ route('reports.export', array_merge(request()->query(), ['format' => 'pdf'])) }}"
-                        class="px-4 py-2 bg-brand-dark text-white hover:bg-blue-800 transition rounded-sm text-sm font-semibold tracking-wide shadow-sm">
+                        class="px-4 py-2 bg-[#003B73] text-white hover:bg-blue-800 transition rounded-sm text-sm font-semibold tracking-wide shadow-sm">
                         EXPORT PDF
                     </a>
                 </div>

@@ -123,10 +123,10 @@ class ReportService
             'new_values' => json_encode([
                 'filters' => $filters,
                 'integrity_hash' => $hash,
-                'format' => $format
+                'format' => $format,
+                'user_agent' => request()->userAgent() ?? 'CLI'
             ]),
             'ip_address' => request()->ip() ?? '127.0.0.1',
-            'user_agent' => request()->userAgent() ?? 'CLI',
         ]);
     }
 }
