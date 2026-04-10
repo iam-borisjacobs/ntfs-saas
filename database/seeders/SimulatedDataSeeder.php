@@ -65,7 +65,7 @@ class SimulatedDataSeeder extends Seeder
             
             $fileRecord = FileRecord::create([
                 'uuid' => (string) Str::uuid(),
-                'file_reference_number' => 'NAMA/2026/' . strtoupper(Str::random(6)),
+                'file_reference_number' => 'SYS/2026/' . strtoupper(Str::random(6)),
                 'title' => $fileTitle,
                 'originating_department_id' => $originDept->id,
                 'current_department_id' => $creator->department_id,

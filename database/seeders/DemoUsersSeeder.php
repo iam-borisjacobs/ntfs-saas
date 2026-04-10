@@ -29,14 +29,14 @@ class DemoUsersSeeder extends Seeder
         $defaultRole = empty($roles) ? null : 'Clerk';
 
         $demoUsers = [
-            'Oluwaseun Adeyemi' => 'o.adeyemi@nama.gov.ng',
-            'Ngozi Eze' => 'n.eze@nama.gov.ng',
-            'Abubakar Ibrahim' => 'a.ibrahim@nama.gov.ng',
-            'Fatima Bello' => 'f.bello@nama.gov.ng',
-            'Chidiebere Okafor' => 'c.okafor@nama.gov.ng',
-            'Samuel Peters' => 's.peters@nama.gov.ng',
-            'Grace Opeyemi' => 'g.opeyemi@nama.gov.ng',
-            'Musa Danjuma' => 'm.danjuma@nama.gov.ng',
+            'Oluwaseun Adeyemi' => 'o.adeyemi@system.local',
+            'Ngozi Eze' => 'n.eze@system.local',
+            'Abubakar Ibrahim' => 'a.ibrahim@system.local',
+            'Fatima Bello' => 'f.bello@system.local',
+            'Chidiebere Okafor' => 'c.okafor@system.local',
+            'Samuel Peters' => 's.peters@system.local',
+            'Grace Opeyemi' => 'g.opeyemi@system.local',
+            'Musa Danjuma' => 'm.danjuma@system.local',
         ];
 
         $counter = 200; // Start ID range for demo users
@@ -67,6 +67,6 @@ class DemoUsersSeeder extends Seeder
             $counter++;
         }
 
-        $this->command->info('8 Demo Users successfully generated across random NAMA departments.');
+        $this->command->info('8 Demo Users successfully generated across random system departments.');
     }
 }

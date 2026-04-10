@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(StatusSeeder::class);
 
         // Core Departments & Demo Users
-        $this->call(NAMADepartmentSeeder::class);
+        $this->call(DefaultDepartmentSeeder::class);
         $this->call(DemoUsersSeeder::class);
 
         // System Admin Account Setup
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
 
         // System Admin Account
         $sysAdminUser = \App\Models\User::firstOrCreate(
-            ['email' => 'admin@nama.gov.ng'],
+            ['email' => 'admin@system.local'],
             [
                 'name' => 'System Administrator',
                 'system_identifier' => 'SYS-001',
