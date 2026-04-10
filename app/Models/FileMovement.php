@@ -20,6 +20,7 @@ class FileMovement extends Model
             'received_at' => 'datetime',
             'closed_at' => 'datetime',
             'movement_closed' => 'boolean',
+            'escalation_flag' => 'boolean',
         ];
     }
 

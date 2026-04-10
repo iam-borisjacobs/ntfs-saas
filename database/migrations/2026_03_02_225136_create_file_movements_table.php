@@ -26,7 +26,8 @@ return new class extends Migration
             $table->text('remarks')->nullable();
         });
 
-        \Illuminate\Support\Facades\DB::unprepared("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::unprepared("
             ALTER TABLE file_movements ADD CONSTRAINT chk_ack_status CHECK (acknowledgment_status IN ('PENDING', 'ACCEPTED', 'REJECTED'));
             
             CREATE UNIQUE INDEX idx_single_pending_movement ON file_movements (file_id) WHERE acknowledgment_status = 'PENDING';
@@ -75,6 +76,7 @@ return new class extends Migration
             BEFORE UPDATE ON file_records
             FOR EACH ROW EXECUTE FUNCTION prevent_close_with_pending_transit();
         ");
+        }
     }
 
     /**

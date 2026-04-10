@@ -13,8 +13,12 @@ return new class extends Migration
     {
         // Enable Trigram Extension for partial title matches (PostgreSQL only)
         if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
             \Illuminate\Support\Facades\DB::unprepared('CREATE EXTENSION IF NOT EXISTS pg_trgm;');
+        }
+            if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
             \Illuminate\Support\Facades\DB::unprepared('CREATE INDEX idx_files_title_trgm ON file_records USING gin (title gin_trgm_ops);');
+        }
         } else {
             // Graceful fallback to standard indexing for MySQL/SQLite simple searches
             Schema::table('file_records', function (Blueprint $table) {
@@ -49,7 +53,9 @@ return new class extends Migration
         });
 
         if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
             \Illuminate\Support\Facades\DB::unprepared('DROP INDEX IF EXISTS idx_files_title_trgm;');
+        }
             // Avoid dropping extension as it might be used globally
         } else {
             Schema::table('file_records', function (Blueprint $table) {

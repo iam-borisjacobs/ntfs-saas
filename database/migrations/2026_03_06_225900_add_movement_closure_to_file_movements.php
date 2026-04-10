@@ -23,7 +23,8 @@ return new class extends Migration
         ");
 
         // 3. Replace immutability trigger to allow closure-field updates on ACCEPTED movements
-        DB::unprepared("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            DB::unprepared("
             CREATE OR REPLACE FUNCTION enforce_movement_immutability() RETURNS TRIGGER AS \$\$
             BEGIN
                 IF OLD.acknowledgment_status IN ('ACCEPTED', 'REJECTED') THEN
@@ -40,6 +41,7 @@ return new class extends Migration
             END;
             \$\$ LANGUAGE plpgsql;
         ");
+        }
 
         // 4. Seed RECEIVED -> CLOSED status transition
         $receivedId = DB::table('statuses')->where('name', 'RECEIVED')->value('id');
@@ -56,7 +58,8 @@ return new class extends Migration
     public function down(): void
     {
         // Restore original trigger
-        DB::unprepared("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            DB::unprepared("
             CREATE OR REPLACE FUNCTION enforce_movement_immutability() RETURNS TRIGGER AS \$\$
             BEGIN
                 IF OLD.acknowledgment_status IN ('ACCEPTED', 'REJECTED') THEN
@@ -66,6 +69,7 @@ return new class extends Migration
             END;
             \$\$ LANGUAGE plpgsql;
         ");
+        }
 
         // Remove transition
         $receivedId = DB::table('statuses')->where('name', 'RECEIVED')->value('id');

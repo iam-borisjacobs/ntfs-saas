@@ -10,7 +10,8 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Ledger Immutability Trigger
-        \Illuminate\Support\Facades\DB::unprepared("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::unprepared("
             CREATE OR REPLACE FUNCTION enforce_movement_immutability()
             RETURNS TRIGGER AS $$
             BEGIN
@@ -25,9 +26,11 @@ return new class extends Migration
             BEFORE UPDATE ON file_movements
             FOR EACH ROW EXECUTE FUNCTION enforce_movement_immutability();
         ");
+        }
 
         // 2. Terminal State Guard Trigger
-        \Illuminate\Support\Facades\DB::unprepared("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::unprepared("
             CREATE OR REPLACE FUNCTION prevent_movement_on_terminal_state()
             RETURNS TRIGGER AS $$
             DECLARE
@@ -49,6 +52,7 @@ return new class extends Migration
             BEFORE INSERT ON file_movements
             FOR EACH ROW EXECUTE FUNCTION prevent_movement_on_terminal_state();
         ");
+        }
     }
 
     /**

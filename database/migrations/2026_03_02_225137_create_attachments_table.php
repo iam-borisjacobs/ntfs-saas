@@ -24,7 +24,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        \Illuminate\Support\Facades\DB::unprepared("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::unprepared("
             CREATE OR REPLACE FUNCTION prevent_orphaned_attachments() RETURNS TRIGGER AS $$
             BEGIN
                 IF EXISTS (SELECT 1 FROM file_records WHERE id = NEW.file_id AND status_id IN (
@@ -40,6 +41,7 @@ return new class extends Migration
             BEFORE INSERT ON attachments
             FOR EACH ROW EXECUTE FUNCTION prevent_orphaned_attachments();
         ");
+        }
     }
 
     /**

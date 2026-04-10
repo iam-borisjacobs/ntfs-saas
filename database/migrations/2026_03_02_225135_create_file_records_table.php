@@ -33,7 +33,8 @@ return new class extends Migration
             $table->timestamp('closed_at')->nullable();
         });
 
-        \Illuminate\Support\Facades\DB::unprepared("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::unprepared("
             ALTER TABLE file_records ADD CONSTRAINT chk_file_priority CHECK (priority_level IN (1, 2, 3));
             ALTER TABLE file_records ADD CONSTRAINT chk_file_confidentiality CHECK (confidentiality_level IN (1, 2, 3));
 
@@ -47,6 +48,7 @@ return new class extends Migration
             BEFORE DELETE ON file_records
             FOR EACH ROW EXECUTE FUNCTION prevent_file_deletion();
         ");
+        }
     }
 
     /**

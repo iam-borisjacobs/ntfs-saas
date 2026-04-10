@@ -16,11 +16,13 @@ return new class extends Migration
         });
 
         // Add CHECK constraint
-        \Illuminate\Support\Facades\DB::statement("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::statement("
             ALTER TABLE file_movements
             ADD CONSTRAINT chk_movement_type 
             CHECK (movement_type IN ('CREATION', 'DISPATCH', 'RECEIVE', 'REJECT', 'RETURN', 'SYSTEM_ASSIGNMENT', 'ESCALATION_FLAG'))
         ");
+        }
     }
 
     /**
@@ -28,7 +30,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE file_movements DROP CONSTRAINT chk_movement_type");
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::statement("ALTER TABLE file_movements DROP CONSTRAINT chk_movement_type");
+        }
         
         Schema::table('file_movements', function (Blueprint $table) {
             $table->dropColumn('movement_type');

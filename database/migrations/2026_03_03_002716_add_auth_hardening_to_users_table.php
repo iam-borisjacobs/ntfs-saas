@@ -15,7 +15,8 @@ return new class extends Migration
             $table->smallInteger('clearance_level')->default(1);
         });
 
-        \Illuminate\Support\Facades\DB::unprepared("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::unprepared("
             ALTER TABLE users ADD CONSTRAINT chk_user_clearance CHECK (clearance_level BETWEEN 1 AND 3);
             CREATE INDEX idx_users_active_clearance ON users (is_active, clearance_level);
 
@@ -38,6 +39,7 @@ return new class extends Migration
             AFTER INSERT OR DELETE ON model_has_roles
             FOR EACH ROW EXECUTE FUNCTION audit_user_role_changes();
         ");
+        }
     }
 
     /**
@@ -45,12 +47,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        \Illuminate\Support\Facades\DB::unprepared("
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::unprepared("
             DROP TRIGGER IF EXISTS enforce_role_audit ON model_has_roles;
             DROP FUNCTION IF EXISTS audit_user_role_changes();
             ALTER TABLE users DROP CONSTRAINT IF EXISTS chk_user_clearance;
             DROP INDEX IF EXISTS idx_users_active_clearance;
         ");
+        }
         
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('clearance_level');
