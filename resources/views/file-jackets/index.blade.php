@@ -242,7 +242,7 @@
                         @if (request()->hasAny(['search', 'status', 'year']))
                             No @term('file_jackets', 'jackets') match your filters. Try adjusting your search criteria.
                         @else
-                            Create your first @term('file_jacket', '@term('file_jacket', 'file jacket')') to start organizing documents in your @term('department', '@term('department', 'department')').
+                            Create your first @term('file_jacket', 'file jacket') to start organizing documents in your @term('department', 'department').
                         @endif
                     </p>
                     @if (!request()->hasAny(['search', 'status', 'year']))
