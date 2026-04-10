@@ -18,6 +18,7 @@
         $systemGuestDescription =
             \App\Models\SystemSetting::where('key', 'system_guest_description')->value('value') ?:
             'Authorized personnel only. Access the central registry to dispatch, track, and acknowledge critical documentation sequences across all inter-departmental desks.';
+        $primaryColorHex = \App\Models\SystemSetting::where('key', 'primary_color_hex')->value('value') ?: '#003B73';
     @endphp
 
     <title>{{ $systemTitle }}</title>
@@ -32,12 +33,18 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        :root {
+            --primary-color: {{ $primaryColorHex }};
+        }
+    </style>
 </head>
 
 <body class="font-sans text-gray-900 antialiased min-h-screen flex flex-col lg:flex-row bg-white">
 
     <!-- Left Banner Side (Brand) -->
-    <div class="lg:w-1/2 bg-[#003B73] p-12 lg:p-24 flex flex-col justify-center text-white relative overflow-hidden">
+    <div class="lg:w-1/2 bg-primary p-12 lg:p-24 flex flex-col justify-center text-white relative overflow-hidden">
         <!-- Decorative overlay -->
         <div
             class="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-white via-transparent to-transparent">
@@ -78,7 +85,7 @@
                         class="max-h-24 w-auto object-contain mb-4">
                 @else
                     <div
-                        class="h-16 w-16 bg-[#003B73] text-white rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-blue-900/20">
+                        class="h-16 w-16 bg-primary text-white rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-blue-900/20">
                         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                             <path
                                 d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />

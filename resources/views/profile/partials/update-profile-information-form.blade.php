@@ -30,7 +30,7 @@
                     file:mr-4 file:py-2 file:px-4
                     file:rounded-md file:border-0
                     file:text-sm file:font-semibold
-                    file:bg-[#003B73] file:text-white
+                    file:bg-primary file:text-white
                     hover:file:bg-blue-800" />
                 <x-input-error class="mt-2" :messages="$errors->get('profile_photo')" />
             </div>

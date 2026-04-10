@@ -6,7 +6,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
             </a>
-            <h2 class="font-semibold text-xl text-[#003B73] leading-tight">{{ __('Receive Document') }}</h2>
+            <h2 class="font-semibold text-xl text-primary leading-tight">{{ __('Receive Document') }}</h2>
         </div>
     </x-slot>
 
@@ -33,7 +33,7 @@
             <div class="bg-white p-6 shadow-sm border border-gray-200 rounded">
                 <div class="flex items-start gap-4">
                     <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-6 h-6 text-[#003B73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -52,7 +52,7 @@
                         <p class="text-sm font-medium text-gray-900">{{ $movement->fromUser->name ?? 'Unknown' }}</p>
                     </div>
                     <div>
-                        <p class="text-xs font-bold text-gray-500 uppercase">From Department</p>
+                        <p class="text-xs font-bold text-gray-500 uppercase">From @term('department', 'Department')</p>
                         <p class="text-sm font-medium text-gray-900">{{ $movement->fromDepartment->name ?? '—' }}</p>
                     </div>
                     <div>
@@ -81,19 +81,19 @@
 
                 <div class="bg-white p-6 shadow-sm border border-gray-200 rounded">
                     <div class="flex items-center gap-2 mb-4">
-                        <svg class="w-5 h-5 text-[#003B73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                 d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
-                        <h4 class="font-bold text-[#003B73] text-sm uppercase tracking-wider">Document Filing</h4>
+                        <h4 class="font-bold text-primary text-sm uppercase tracking-wider">Document Filing</h4>
                     </div>
-                    <p class="text-xs text-gray-500 mb-4">Select a file jacket to physically file this document. You can
+                    <p class="text-xs text-gray-500 mb-4">Select a @term('file_jacket', '@term('file_jacket', 'file jacket')') to physically file this document. You can
                         leave this empty to file later.</p>
 
                     <div class="flex gap-2">
                         <x-custom-select>
                             <select name="file_jacket_id" id="file_jacket_id"
-                                class="block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition text-sm">
+                                class="block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition text-sm">
                                 <option value="">— Not Filing Now —</option>
                                 @foreach ($jackets as $jacket)
                                     <option value="{{ $jacket->id }}">{{ $jacket->jacket_code }} — {{ $jacket->title }}
@@ -102,7 +102,7 @@
                             </select>
                         </x-custom-select>
                         <button type="button" @click="showJacketModal = true"
-                            class="flex-shrink-0 inline-flex items-center px-3 py-2 bg-white border border-[#003B73] text-[#003B73] text-xs font-semibold rounded-sm hover:bg-[#003B73] hover:text-white transition">
+                            class="flex-shrink-0 inline-flex items-center px-3 py-2 bg-white border border-primary text-primary text-xs font-semibold rounded-sm hover:bg-primary hover:text-white transition">
                             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4v16m8-8H4"></path>
@@ -176,16 +176,16 @@
                 @click.away="showJacketModal = false">
                 <div class="p-6">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="h-10 w-10 rounded-full bg-[#003B73]/10 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-[#003B73]" fill="none" stroke="currentColor"
+                        <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-bold text-gray-900">Create New File Jacket</h3>
-                            <p class="text-sm text-gray-500">Department:
+                            <h3 class="text-lg font-bold text-gray-900">Create New @term('file_jacket', 'File Jacket')</h3>
+                            <p class="text-sm text-gray-500">@term('department', 'Department'):
                                 {{ Auth::user()->department->name ?? 'Unknown' }}</p>
                         </div>
                     </div>
@@ -194,20 +194,20 @@
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Jacket Title <span
                                     class="text-red-500">*</span></label>
                             <input type="text" x-model="jacketTitle" placeholder="e.g. Budget Review 2026"
-                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                                class="w-full rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Description <span
                                     class="text-gray-400 font-normal">(Optional)</span></label>
                             <textarea x-model="jacketDesc" rows="2" placeholder="Brief description"
-                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm"></textarea>
+                                class="w-full rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm"></textarea>
                         </div>
                         <p class="text-xs text-red-600" x-show="jacketError" x-text="jacketError"></p>
                         <div class="flex justify-end gap-3 pt-2">
                             <button type="button" @click="showJacketModal = false"
                                 class="px-4 py-2 bg-white border border-gray-300 rounded-sm text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
                             <button type="button" @click="createJacket()" :disabled="jacketLoading"
-                                class="px-4 py-2 bg-[#003B73] text-white rounded-sm text-sm font-semibold hover:bg-[#00294d] transition disabled:opacity-50">
+                                class="px-4 py-2 bg-primary text-white rounded-sm text-sm font-semibold hover:bg-[#00294d] transition disabled:opacity-50">
                                 <span x-show="!jacketLoading">Create Jacket</span>
                                 <span x-show="jacketLoading">Creating...</span>
                             </button>

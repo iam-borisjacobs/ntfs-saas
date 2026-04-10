@@ -12,6 +12,9 @@ export default {
 
     theme: {
         extend: {
+            colors: {
+                primary: "var(--primary-color)",
+            },
             fontFamily: {
                 sans: ["Figtree", ...defaultTheme.fontFamily.sans],
             },

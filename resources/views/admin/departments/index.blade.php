@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-6">
-            <h2 class="font-semibold text-xl text-[#003B73] leading-tight">
-                {{ __('Department Management') }}
+            <h2 class="font-semibold text-xl text-primary leading-tight">
+                {{ App\Models\SystemTerminology::getTerm('department', 'Department') . ' Management' }}
             </h2>
             <a href="{{ route('admin.departments.create') }}"
-                class="px-4 py-2 bg-[#003B73] text-white rounded-sm text-sm font-semibold tracking-wide hover:bg-blue-800 transition">
+                class="px-4 py-2 bg-primary text-white rounded-sm text-sm font-semibold tracking-wide hover:bg-blue-800 transition">
                 + ADD DEPARTMENT
             </a>
         </div>
@@ -18,11 +18,11 @@
                     <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
-                                Department Name
+                                class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
+                                @term('department', 'Department') Name
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                 Active Users</th>
                             <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                         </tr>
@@ -41,7 +41,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right font-medium">
                                     <a href="{{ route('admin.departments.edit', $dept->id) }}"
-                                        class="text-[#003B73] hover:text-blue-900 underline">Edit</a>
+                                        class="text-primary hover:text-blue-900 underline">Edit</a>
                                 </td>
                             </tr>
                         @endforeach

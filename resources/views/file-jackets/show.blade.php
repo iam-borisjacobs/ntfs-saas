@@ -8,11 +8,11 @@
                         </path>
                     </svg>
                 </a>
-                <svg class="w-6 h-6 text-[#003B73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                         d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                 </svg>
-                <h2 class="font-semibold text-xl text-[#003B73] leading-tight">{{ $jacket->jacket_code }}</h2>
+                <h2 class="font-semibold text-xl text-primary leading-tight">{{ $jacket->jacket_code }}</h2>
             </div>
             <span
                 class="px-3 py-1 text-xs font-semibold rounded-full
@@ -47,7 +47,7 @@
                         <span class="block text-md font-medium text-gray-900 mt-1">{{ $jacket->title }}</span>
                     </div>
                     <div>
-                        <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Department</span>
+                        <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">@term('department', 'Department')</span>
                         <span
                             class="block text-md font-medium text-gray-900 mt-1">{{ $jacket->department->name ?? '—' }}</span>
                     </div>
@@ -119,7 +119,7 @@
                             $jacket->current_department_id === Auth::user()->department_id &&
                             !$jacket->hasPendingDispatch())
                         <a href="{{ route('file-jackets.dispatch.create', $jacket->id) }}"
-                            class="inline-flex items-center px-4 py-1.5 bg-[#003B73] text-white text-xs font-semibold rounded hover:bg-[#00294d] transition shadow-sm mr-auto">
+                            class="inline-flex items-center px-4 py-1.5 bg-primary text-white text-xs font-semibold rounded hover:bg-[#00294d] transition shadow-sm mr-auto">
                             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -129,7 +129,7 @@
                     @endif
 
                     <a href="{{ route('file-jackets.edit', $jacket->id) }}"
-                        class="inline-flex items-center px-3 py-1.5 bg-white border border-[#003B73] text-[#003B73] text-xs font-semibold rounded hover:bg-[#003B73] hover:text-white transition">
+                        class="inline-flex items-center px-3 py-1.5 bg-white border border-primary text-primary text-xs font-semibold rounded hover:bg-primary hover:text-white transition">
                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
@@ -199,7 +199,7 @@
                         <div class="flex gap-2">
                             @if ($availableFiles->count())
                                 <button type="button" @click="showFileModal = true"
-                                    class="inline-flex items-center px-3 py-1.5 bg-white border border-[#003B73] text-[#003B73] text-xs font-semibold rounded-sm hover:bg-[#003B73] hover:text-white transition">
+                                    class="inline-flex items-center px-3 py-1.5 bg-white border border-primary text-primary text-xs font-semibold rounded-sm hover:bg-primary hover:text-white transition">
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -209,7 +209,7 @@
                                 </button>
                             @endif
                             <a href="{{ route('files.create', ['file_jacket_id' => $jacket->id]) }}"
-                                class="inline-flex items-center px-3 py-1.5 bg-[#003B73] text-white text-xs font-semibold rounded-sm hover:bg-[#00294d] transition">
+                                class="inline-flex items-center px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-sm hover:bg-[#00294d] transition">
                                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -226,19 +226,19 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th
-                                    class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                     File Reference</th>
                                 <th
-                                    class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                     Title</th>
                                 <th
-                                    class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                     Priority</th>
                                 <th
-                                    class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                     Current Holder</th>
                                 <th
-                                    class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                     Last Movement</th>
                                 <th class="px-4 py-3 text-right"><span class="sr-only">Actions</span></th>
                             </tr>
@@ -269,7 +269,7 @@
                                     <td class="px-4 py-3 text-right whitespace-nowrap">
                                         <div class="flex items-center justify-end gap-2" x-data="{ showRemoveModal: false }">
                                             <a href="{{ route('files.show', $file->uuid) }}"
-                                                class="text-[#003B73] hover:underline font-semibold text-xs">View</a>
+                                                class="text-primary hover:underline font-semibold text-xs">View</a>
                                             @if ($jacket->status === 'active')
                                                 <form method="POST"
                                                     action="{{ route('file-jackets.unfile-document', $jacket->id) }}"
@@ -332,13 +332,13 @@
                             @click.away="showFileModal = false">
                             <div class="p-6">
                                 <h3 class="text-lg font-bold text-gray-900 mb-1">File Document Into Jacket</h3>
-                                <p class="text-sm text-gray-500 mb-4">Select an unfiled document from your department.
+                                <p class="text-sm text-gray-500 mb-4">Select an unfiled document from your @term('department', 'department').
                                 </p>
                                 <form method="POST" action="{{ route('file-jackets.file-document', $jacket->id) }}">
                                     @csrf
                                     <x-custom-select>
                                         <select name="file_id"
-                                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm mb-4">
+                                            class="w-full rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm mb-4">
                                             <option value="">Select Document...</option>
                                             @foreach ($availableFiles as $af)
                                                 <option value="{{ $af->id }}">{{ $af->file_reference_number }} —
@@ -350,7 +350,7 @@
                                         <button type="button" @click="showFileModal = false"
                                             class="px-4 py-2 bg-white border border-gray-300 rounded-sm text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
                                         <button type="submit"
-                                            class="px-4 py-2 bg-[#003B73] text-white rounded-sm text-sm font-semibold hover:bg-[#00294d] transition">File
+                                            class="px-4 py-2 bg-primary text-white rounded-sm text-sm font-semibold hover:bg-[#00294d] transition">File
                                             Document</button>
                                     </div>
                                 </form>
@@ -385,7 +385,7 @@
                                 <div class="flex-1 bg-gray-50 rounded p-3 border border-gray-100">
                                     <div class="flex justify-between items-center">
                                         <a href="{{ route('files.show', $event['file_uuid']) }}"
-                                            class="text-sm font-semibold text-[#003B73] hover:underline">{{ $event['file_ref'] }}</a>
+                                            class="text-sm font-semibold text-primary hover:underline">{{ $event['file_ref'] }}</a>
                                         <span
                                             class="text-xs text-gray-400">{{ optional($event['date'])->format('d M Y H:i') }}</span>
                                     </div>
@@ -416,19 +416,19 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         From</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         To</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Dispatched</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Received</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Status</th>
                                 </tr>
                             </thead>
@@ -448,7 +448,7 @@
                                                 <span
                                                     class="block text-xs text-gray-500">{{ $mov->toUser->name }}</span>
                                             @else
-                                                <span class="block text-xs text-gray-400 italic">Department
+                                                <span class="block text-xs text-gray-400 italic">@term('department', 'Department')
                                                     Inbox</span>
                                             @endif
                                         </td>
@@ -492,7 +492,7 @@
             <div class="relative bg-white rounded-lg shadow-2xl max-w-sm mx-auto w-full p-6 text-center"
                 @click.away="showModal = false">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4"
-                     :class="{'bg-[#003B73]/10 text-[#003B73]': modalType === 'close', 'bg-amber-100 text-amber-600': modalType === 'archive', 'bg-green-100 text-green-600': modalType === 'reactivate'}">
+                     :class="{'bg-primary/10 text-primary': modalType === 'close', 'bg-amber-100 text-amber-600': modalType === 'archive', 'bg-green-100 text-green-600': modalType === 'reactivate'}">
                     <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
@@ -505,7 +505,7 @@
                         class="px-5 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded hover:bg-gray-200 transition">Cancel</button>
                     <button type="button" @click="confirmAction()"
                         class="px-5 py-2.5 text-white font-semibold rounded shadow-md transition"
-                        :class="{'bg-[#003B73] hover:bg-[#00294d]': modalType === 'close', 'bg-amber-500 hover:bg-amber-600': modalType === 'archive', 'bg-green-600 hover:bg-green-700': modalType === 'reactivate'}">
+                        :class="{'bg-primary hover:bg-[#00294d]': modalType === 'close', 'bg-amber-500 hover:bg-amber-600': modalType === 'archive', 'bg-green-600 hover:bg-green-700': modalType === 'reactivate'}">
                         Confirm
                     </button>
                 </div>

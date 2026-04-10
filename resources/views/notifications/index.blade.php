@@ -2,11 +2,11 @@
     <x-slot name="header">
         <div class="flex items-center justify-between w-full">
             <div class="flex items-center gap-3">
-                <h2 class="font-bold text-xl text-[#003B73] leading-tight tracking-tight">
+                <h2 class="font-bold text-xl text-primary leading-tight tracking-tight">
                     {{ __('Notifications') }}
                 </h2>
                 @if ($notifications->total() > 0)
-                    <span class="bg-[#003B73]/10 text-[#003B73] text-xs font-bold px-2.5 py-1 rounded-full">
+                    <span class="bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-full">
                         {{ $notifications->total() }}
                     </span>
                 @endif
@@ -15,7 +15,7 @@
                 @submit="submitting = true">
                 @csrf
                 <button type="submit" x-bind:disabled="submitting"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#003B73]/30 focus:border-[#003B73] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
                     <svg x-show="!submitting" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -100,7 +100,7 @@
                                     'icon' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
                                 ],
                                 default => [
-                                    'gradient' => 'from-blue-400 to-[#003B73]',
+                                    'gradient' => 'from-blue-400 to-primary',
                                     'shadow' => 'shadow-blue-200',
                                     'badge_bg' => 'bg-blue-50 text-blue-700 border-blue-200',
                                     'label' => 'Info',
@@ -110,7 +110,7 @@
                         @endphp
 
                         <div class="bg-white rounded-2xl shadow-sm border transition-all duration-300 hover:shadow-md overflow-hidden
-                            {{ !$notif->is_read ? 'border-l-[5px] border-l-[#003B73] border-t-gray-100 border-r-gray-100 border-b-gray-100 bg-gradient-to-r from-blue-50/30 to-white' : 'border-gray-100' }}">
+                            {{ !$notif->is_read ? 'border-l-[5px] border-l-primary border-t-gray-100 border-r-gray-100 border-b-gray-100 bg-gradient-to-r from-blue-50/30 to-white' : 'border-gray-100' }}">
 
                             {{-- Card Header --}}
                             <div class="px-6 pt-6 pb-4 flex items-start justify-between gap-4">
@@ -123,7 +123,7 @@
                                     </div>
                                     <div>
                                         <div class="flex items-center gap-2.5 mb-0.5">
-                                            <h4 class="text-base font-bold {{ !$notif->is_read ? 'text-[#003B73]' : 'text-gray-800' }}">
+                                            <h4 class="text-base font-bold {{ !$notif->is_read ? 'text-primary' : 'text-gray-800' }}">
                                                 {{ str_replace('_', ' ', $notif->type) }}
                                             </h4>
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border {{ $severityConfig['badge_bg'] }}">
@@ -141,8 +141,8 @@
                                 {{-- Unread Indicator --}}
                                 @if (!$notif->is_read)
                                     <span class="relative flex h-3 w-3 flex-shrink-0 mt-1">
-                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#003B73] opacity-75"></span>
-                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-[#003B73]"></span>
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
                                     </span>
                                 @endif
                             </div>
@@ -197,7 +197,7 @@
                                         <form action="{{ route('notifications.read', $notif->id) }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit"
-                                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#003B73] border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#003B73] focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
+                                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
                                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                                 </svg>

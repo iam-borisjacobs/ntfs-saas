@@ -72,7 +72,7 @@
                             @endforelse
                         </div>
                         <x-dropdown-link :href="route('notifications.index')"
-                            class="text-center font-bold text-sm text-[#003B73] bg-gray-50 border-t border-gray-100 hover:bg-gray-100">
+                            class="text-center font-bold text-sm text-primary bg-gray-50 border-t border-gray-100 hover:bg-gray-100">
                             Review All Activity
                         </x-dropdown-link>
                     </x-slot>

@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-6">
-            <h2 class="font-semibold text-xl text-[#003B73] leading-tight flex items-center gap-3">
-                <a href="javascript:history.back()" class="text-gray-400 hover:text-[#003B73] transition">
+            <h2 class="font-semibold text-xl text-primary leading-tight flex items-center gap-3">
+                <a href="javascript:history.back()" class="text-gray-400 hover:text-primary transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -11,7 +11,7 @@
                 {{ __('File Details: ') }} <span
                     class="font-mono text-gray-600">{{ $file->file_reference_number }}</span>
             </h2>
-            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-[#003B73]">
+            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-primary">
                 {{ $file->status->name ?? 'UNKNOWN' }}
             </span>
         </div>
@@ -54,7 +54,7 @@
 
                         <div>
                             <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Originating
-                                Department</span>
+                                @term('department', 'Department')</span>
                             <span
                                 class="block text-md font-medium text-gray-900 mt-1">{{ $file->originatingDepartment->name ?? 'System' }}</span>
                         </div>
@@ -79,7 +79,7 @@
                             <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Reference Document</span>
                             @if ($file->reference)
                                 <a href="{{ route('files.show', $file->reference->uuid) }}"
-                                    class="inline-block px-3 py-1.5 mt-1 bg-gray-50 border border-gray-200 rounded text-sm font-medium text-[#003B73] hover:bg-gray-100 hover:text-blue-800 transition">
+                                    class="inline-block px-3 py-1.5 mt-1 bg-gray-50 border border-gray-200 rounded text-sm font-medium text-primary hover:bg-gray-100 hover:text-blue-800 transition">
                                     <svg class="w-4 h-4 inline-block mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                                     </svg>
@@ -100,7 +100,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <span
-                                class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Department</span>
+                                class="block text-xs font-bold text-gray-500 uppercase tracking-wider">@term('department', 'Department')</span>
                             <span
                                 class="block text-md font-medium text-gray-900 mt-1">{{ $file->currentDepartment->name ?? '—' }}</span>
                         </div>
@@ -111,11 +111,11 @@
                                 class="block text-md font-medium text-gray-900 mt-1">{{ $file->currentOwner->name ?? '—' }}</span>
                         </div>
                         <div>
-                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">File
-                                Jacket</span>
+                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">@term('file_jacket', 'File
+                                Jacket')</span>
                             @if ($file->currentFileJacket)
                                 <a href="{{ route('file-jackets.show', $file->currentFileJacket->id) }}"
-                                    class="block text-md font-medium text-[#003B73] mt-1 hover:underline">
+                                    class="block text-md font-medium text-primary mt-1 hover:underline">
                                     {{ $file->currentFileJacket->jacket_code }}
                                 </a>
                                 <span class="text-xs text-gray-500">{{ $file->currentFileJacket->title }}</span>
@@ -139,7 +139,7 @@
                         @forelse($file->movements as $movement)
                             <div class="mb-8 flex justify-between items-start w-full relative">
                                 <div
-                                    class="w-8 h-8 rounded-full bg-[#003B73] shadow-md flex items-center justify-center absolute -left-1 z-10">
+                                    class="w-8 h-8 rounded-full bg-primary shadow-md flex items-center justify-center absolute -left-1 z-10">
                                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -266,7 +266,7 @@
                                                                 Reason <span
                                                                     class="text-gray-400 font-normal">(Optional)</span></label>
                                                             <textarea name="closure_reason" rows="3"
-                                                                class="w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm text-sm"
+                                                                class="w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm text-sm"
                                                                 placeholder="Example: Document processed and filed in departmental records."></textarea>
                                                         </div>
                                                         <div class="flex justify-end gap-3">
@@ -301,7 +301,7 @@
 
                             @can('update', $file)
                                 <button onclick="document.getElementById('upload-modal').classList.remove('hidden')"
-                                    class="px-4 py-2 bg-[#003B73] text-white text-sm font-semibold rounded hover:bg-[#002b54] transition shadow-sm flex items-center gap-2">
+                                    class="px-4 py-2 bg-primary text-white text-sm font-semibold rounded hover:bg-[#002b54] transition shadow-sm flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
@@ -319,7 +319,7 @@
                                         class="flex items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition">
                                         <div class="flex items-center gap-4">
                                             <div
-                                                class="w-10 h-10 rounded bg-blue-100 text-[#003B73] flex items-center justify-center font-bold">
+                                                class="w-10 h-10 rounded bg-blue-100 text-primary flex items-center justify-center font-bold">
                                                 {{ strtoupper(pathinfo($doc->file_name, PATHINFO_EXTENSION)) }}
                                             </div>
                                             <div>
@@ -339,7 +339,7 @@
 
                                         <div class="flex items-center gap-2">
                                             <a href="{{ route('documents.download', $doc) }}"
-                                                class="p-2 text-gray-500 hover:text-[#003B73] hover:bg-blue-50 rounded transition"
+                                                class="p-2 text-gray-500 hover:text-primary hover:bg-blue-50 rounded transition"
                                                 title="Download">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -394,7 +394,7 @@
                                                 class="block text-sm font-medium text-gray-700">Document Type</label>
                                             <x-custom-select>
                                                 <select id="document_type" name="document_type" required
-                                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#003B73] focus:border-[#003B73] sm:text-sm rounded-md">
+                                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
                                                     <option value="Memo">Memo</option>
                                                     <option value="Official Letter">Official Letter</option>
                                                     <option value="Approval">Approval</option>
@@ -409,7 +409,7 @@
                                                 class="block text-sm font-medium text-gray-700 mb-2">Select
                                                 File</label>
                                             <div
-                                                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-[#003B73] transition">
+                                                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-primary transition">
                                                 <div class="space-y-1 text-center">
                                                     <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
                                                         fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -420,7 +420,7 @@
                                                     </svg>
                                                     <div class="flex text-sm text-gray-600 justify-center">
                                                         <label for="document-upload"
-                                                            class="relative cursor-pointer bg-white rounded-md font-medium text-[#003B73] hover:text-[#002b54] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#003B73]">
+                                                            class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-[#002b54] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary">
                                                             <span>Upload a file</span>
                                                             <input id="document-upload" name="document"
                                                                 type="file" class="sr-only" required
@@ -439,11 +439,11 @@
                                 </div>
                                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                     <button type="submit"
-                                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#003B73] text-base font-medium text-white hover:bg-[#002b54] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B73] sm:ml-3 sm:w-auto sm:text-sm">Secure
+                                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-[#002b54] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm">Secure
                                         Upload</button>
                                     <button type="button"
                                         onclick="document.getElementById('upload-modal').classList.add('hidden')"
-                                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B73] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancel</button>
+                                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancel</button>
                                 </div>
                             </form>
                         </div>

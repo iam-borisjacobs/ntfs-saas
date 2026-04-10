@@ -10,6 +10,7 @@
         $systemTitle =
             \App\Models\SystemSetting::where('key', 'system_title')->value('value') ?: config('app.name', 'Laravel');
         $systemFavicon = \App\Models\SystemSetting::where('key', 'system_favicon_path')->value('value');
+        $primaryColorHex = \App\Models\SystemSetting::where('key', 'primary_color_hex')->value('value') ?: '#003B73';
     @endphp
 
     <title>{{ $systemTitle }}</title>
@@ -27,6 +28,10 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
+        :root {
+            --primary-color: {{ $primaryColorHex }};
+        }
+
         /* Custom Elegant Scrollbar for Sidebar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 5px;
@@ -62,7 +67,7 @@
 
         <!-- Sidebar -->
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-            class="fixed inset-y-0 left-0 z-40 w-[270px] bg-[#003B73] text-white flex flex-col h-full transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex-shrink-0 shadow-lg">
+            class="fixed inset-y-0 left-0 z-40 w-[270px] bg-primary text-white flex flex-col h-full transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex-shrink-0 shadow-lg">
             <div class="p-6 flex flex-col items-center justify-center border-b border-white/10 pb-8">
                 @php
                     $systemLogo = \App\Models\SystemSetting::where('key', 'system_logo_path')->first();
@@ -77,7 +82,7 @@
                             <path
                                 d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
                         </svg>
-                        <span class="text-xl font-bold tracking-widest">NAMA NG</span>
+                        <span class="text-xl font-bold tracking-widest">@term('agency_abbr', 'AGENCY')</span>
                     </div>
                 @endif
             </div>
@@ -99,7 +104,7 @@
 
                 @if (Auth::user()->hasAnyRole(['Super Admin', 'Sys Admin', 'Agency Admin', 'Supervisor', 'Officer', 'Clerk', 'Registry Officer']))
                     <a href="{{ route('files.create') }}"
-                        class="flex items-center justify-center gap-2 px-4 py-2.5 mt-2 mb-2 bg-white text-[#003B73] rounded font-bold hover:bg-gray-100 transition shadow-sm text-sm">
+                        class="flex items-center justify-center gap-2 px-4 py-2.5 mt-2 mb-2 bg-white text-primary rounded font-bold hover:bg-gray-100 transition shadow-sm text-sm">
                         Generate or Create
                     </a>
                 @endif
@@ -229,7 +234,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg>
-                            File Jackets
+                            @term('file_jackets', 'File Jackets')
                         </span>
                     </a>
 
@@ -304,7 +309,7 @@
                             Departments
                         </a>
                         <a href="/admin/settings"
-                            class="flex items-center gap-3 px-4 py-2.5 rounded {{ request()->is('admin/settings*') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
+                            class="flex items-center gap-3 px-4 py-2.5 rounded {{ request()->is('admin/settings') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -313,6 +318,13 @@
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             System Settings
+                        </a>
+                        <a href="{{ route('admin.settings.terminology') }}"
+                            class="flex items-center gap-3 px-4 py-2.5 rounded {{ request()->routeIs('admin.settings.terminology') ? 'bg-white/10 text-white font-medium' : 'text-gray-300 hover:bg-white/5 hover:text-white' }} transition group">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                            </svg>
+                            Localization
                         </a>
                     </div>
                 @endrole

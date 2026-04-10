@@ -1,37 +1,37 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-[#003B73] leading-tight">
-            {{ __('Department Inbox') }}
+        <h2 class="font-semibold text-xl text-primary leading-tight">
+            {{ App\Models\SystemTerminology::getTerm('department', 'Department') . ' Inbox' }}
         </h2>
     </x-slot>
 
     <div class="py-8 h-full flex flex-col">
         <div class="w-full sm:px-6 lg:px-8 space-y-6 h-full flex-1">
             <div class="bg-white p-6 shadow-sm border border-gray-200">
-                <p class="text-sm text-gray-500 mb-4">Documents dispatched to your department without a specific
-                    recipient. Any officer in the department may acknowledge receipt to claim custody.</p>
+                <p class="text-sm text-gray-500 mb-4">Documents dispatched to your @term('department', 'department') without a specific
+                    recipient. Any officer in the @term('department', 'department') may acknowledge receipt to claim custody.</p>
                 <div class="bg-white p-0 overflow-hidden rounded-xl shadow-sm border border-gray-100">
                     <div class="w-full overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 text-sm border-t border-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         File Reference</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Subject / Title</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Origin</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Sender</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Dispatched</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Priority</th>
                                     <th class="px-6 py-3 text-right"><span class="sr-only">Actions</span></th>
                                 </tr>
@@ -70,7 +70,7 @@
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-right font-medium flex justify-end space-x-2 items-center w-full min-w-max flex-shrink-0">
                                             <a href="{{ route('files.show', $movement->file->uuid) }}"
-                                                class="inline-flex items-center px-3 py-1.5 bg-[#003B73] border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2 transition ease-in-out duration-150 whitespace-nowrap flex-shrink-0">
+                                                class="inline-flex items-center px-3 py-1.5 bg-primary border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2 transition ease-in-out duration-150 whitespace-nowrap flex-shrink-0">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -100,10 +100,10 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
                                                     d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                             </svg>
-                                            <h3 class="mt-2 text-sm font-medium text-gray-900">Department inbox empty
+                                            <h3 class="mt-2 text-sm font-medium text-gray-900">@term('department', 'Department') inbox empty
                                             </h3>
                                             <p class="mt-1 text-sm text-gray-500">No documents pending acknowledgment
-                                                for your department.</p>
+                                                for your @term('department', 'department').</p>
                                         </td>
                                     </tr>
                                 @endforelse

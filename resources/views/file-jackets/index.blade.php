@@ -2,16 +2,16 @@
     <x-slot name="header">
         <div class="flex items-start gap-6">
             <div>
-                <h2 class="font-semibold text-xl text-[#003B73] leading-tight">{{ __('File Jackets') }}</h2>
+                <h2 class="font-semibold text-xl text-primary leading-tight">@term('file_jackets', 'File Jackets')</h2>
                 <p class="text-sm text-gray-500 mt-0.5">{{ Auth::user()->department->name ?? '' }} — Document Registry
                 </p>
             </div>
             <a href="{{ route('file-jackets.create') }}"
-                class="flex-shrink-0 inline-flex items-center px-6 py-3 bg-[#003B73] border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#003B73] focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
+                class="flex-shrink-0 inline-flex items-center px-6 py-3 bg-primary border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
-                Create File Jacket
+                Create @term('file_jacket', 'File Jacket')
             </a>
         </div>
     </x-slot>
@@ -33,7 +33,7 @@
             {{-- Stats Bar --}}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Jackets</p>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total @term('file_jackets', 'Jackets')</p>
                     <div class="flex items-end justify-between mt-2">
                         <p class="text-3xl font-bold text-amber-600">{{ $stats['total'] }}</p>
                         <svg class="w-6 h-6 text-amber-300 mb-1" fill="none" stroke="currentColor"
@@ -84,24 +84,24 @@
             <div class="bg-white p-6 shadow-sm border border-gray-200 rounded-sm">
                 <form method="GET" action="{{ route('file-jackets.index') }}" class="flex flex-wrap items-end gap-4">
                     <div class="flex-1 min-w-[200px]">
-                        <label class="block text-xs font-bold text-[#003B73] uppercase mb-1">Search</label>
+                        <label class="block text-xs font-bold text-primary uppercase mb-1">Search</label>
                         <div class="relative flex items-center">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-[#003B73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
                             <input type="text" name="search" value="{{ request('search') }}"
                                 placeholder="Search by code or title..."
-                                class="w-full pl-10 rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                                class="w-full pl-10 rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm">
                         </div>
                     </div>
                     <div class="w-36">
-                        <label class="block text-xs font-bold text-[#003B73] uppercase mb-1">Status</label>
+                        <label class="block text-xs font-bold text-primary uppercase mb-1">Status</label>
                         <x-custom-select>
                             <select name="status"
-                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                                class="w-full rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm">
                                 <option value="">All Status</option>
                                 <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active
                                 </option>
@@ -116,10 +116,10 @@
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Year</label>
                         <input type="number" name="year" value="{{ request('year') }}"
                             placeholder="{{ date('Y') }}"
-                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                            class="w-full rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm">
                     </div>
                     <button type="submit"
-                        class="flex-shrink-0 px-6 py-3 bg-[#003B73] border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#003B73] focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">Filter</button>
+                        class="flex-shrink-0 px-6 py-3 bg-primary border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">Filter</button>
                     @if (request()->hasAny(['search', 'status', 'year']))
                         <a href="{{ route('file-jackets.index') }}"
                             class="text-sm text-gray-500 hover:text-gray-700 underline">Clear</a>
@@ -134,19 +134,19 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
-                                    Jacket</th>
+                                    class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
+                                    @term('file_jacket', 'Jacket')</th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                     Title</th>
                                 <th
-                                    class="px-6 py-3 text-center text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                    class="px-6 py-3 text-center text-xs font-semibold text-primary uppercase tracking-wider">
                                     Documents</th>
                                 <th
-                                    class="px-6 py-3 text-center text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                    class="px-6 py-3 text-center text-xs font-semibold text-primary uppercase tracking-wider">
                                     Status</th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                     Created</th>
                                 <th class="px-6 py-3 text-right"><span class="sr-only">Actions</span></th>
                             </tr>
@@ -158,11 +158,11 @@
                                         <div class="flex items-center gap-3">
                                             <div
                                                 class="h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0
-                                                {{ $jacket->status === 'active' ? 'bg-[#003B73]/10' : '' }}
+                                                {{ $jacket->status === 'active' ? 'bg-primary/10' : '' }}
                                                 {{ $jacket->status === 'closed' ? 'bg-gray-100' : '' }}
                                                 {{ $jacket->status === 'archived' ? 'bg-amber-50' : '' }}">
                                                 <svg class="w-5 h-5
-                                                    {{ $jacket->status === 'active' ? 'text-[#003B73]' : '' }}
+                                                    {{ $jacket->status === 'active' ? 'text-primary' : '' }}
                                                     {{ $jacket->status === 'closed' ? 'text-gray-400' : '' }}
                                                     {{ $jacket->status === 'archived' ? 'text-amber-500' : '' }}"
                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,7 +172,7 @@
                                                 </svg>
                                             </div>
                                             <span
-                                                class="font-mono text-xs font-bold text-[#003B73]">{{ $jacket->jacket_code }}</span>
+                                                class="font-mono text-xs font-bold text-primary">{{ $jacket->jacket_code }}</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
@@ -184,7 +184,7 @@
                                     <td class="px-6 py-4 text-center">
                                         <span
                                             class="inline-flex items-center gap-1 font-semibold
-                                            {{ $jacket->current_files_count > 0 ? 'text-[#003B73]' : 'text-gray-400' }}">
+                                            {{ $jacket->current_files_count > 0 ? 'text-primary' : 'text-gray-400' }}">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -231,32 +231,32 @@
             @else
                 <div class="bg-white py-10 px-6 shadow-sm border border-gray-200 rounded-sm text-center">
                     <div class="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
-                        <svg class="h-8 w-8 text-[#003B73]" fill="none" viewBox="0 0 24 24"
+                        <svg class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                 d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900">No file jackets found</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">No @term('file_jackets', 'file jackets') found</h3>
                     <p class="mt-1.5 text-sm text-gray-500 max-w-md mx-auto">
                         @if (request()->hasAny(['search', 'status', 'year']))
-                            No jackets match your filters. Try adjusting your search criteria.
+                            No @term('file_jackets', 'jackets') match your filters. Try adjusting your search criteria.
                         @else
-                            Create your first file jacket to start organizing documents in your department.
+                            Create your first @term('file_jacket', '@term('file_jacket', 'file jacket')') to start organizing documents in your @term('department', '@term('department', 'department')').
                         @endif
                     </p>
                     @if (!request()->hasAny(['search', 'status', 'year']))
                         <a href="{{ route('file-jackets.create') }}"
-                            class="mt-5 inline-flex items-center justify-center px-6 py-3 bg-[#003B73] border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#003B73] focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
+                            class="mt-5 inline-flex items-center justify-center px-6 py-3 bg-primary border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4v16m8-8H4"></path>
                             </svg>
-                            Create File Jacket
+                            Create @term('file_jacket', 'File Jacket')
                         </a>
                     @else
                         <a href="{{ route('file-jackets.index') }}"
-                            class="mt-5 inline-flex items-center text-sm text-[#003B73] font-semibold hover:underline">
+                            class="mt-5 inline-flex items-center text-sm text-primary font-semibold hover:underline">
                             Clear Filters →
                         </a>
                     @endif

@@ -15,8 +15,9 @@ class SystemSettingController extends Controller
         $systemAuthorName = \App\Models\SystemSetting::where('key', 'system_author_name')->value('value') ?: 'NAMA NG';
         $systemGuestHeader = \App\Models\SystemSetting::where('key', 'system_guest_header')->value('value') ?: 'Secure Document Tracking Portal';
         $systemGuestDescription = \App\Models\SystemSetting::where('key', 'system_guest_description')->value('value') ?: 'Authorized personnel only. Access the central registry to dispatch, track, and acknowledge critical documentation sequences across all inter-departmental desks.';
-        
-        return view('admin.settings.index', compact('setting', 'digitalModuleEnabled', 'systemTitle', 'systemFavicon', 'systemAuthorName', 'systemGuestHeader', 'systemGuestDescription'));
+        $primaryColorHex = \App\Models\SystemSetting::where('key', 'primary_color_hex')->value('value') ?: '#003B73'; // Default to the original dark blue
+
+        return view('admin.settings.index', compact('setting', 'digitalModuleEnabled', 'systemTitle', 'systemFavicon', 'systemAuthorName', 'systemGuestHeader', 'systemGuestDescription', 'primaryColorHex'));
     }
 
     public function updateLogo(Request $request)
@@ -60,12 +61,17 @@ class SystemSettingController extends Controller
             'system_guest_header' => 'nullable|string|max:255',
             'system_guest_description' => 'nullable|string|max:1000',
             'favicon' => 'nullable|image|mimes:ico,png,svg,jpg,jpeg|max:1024',
+            'primary_color_hex' => ['nullable', 'string', 'regex:/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/'],
         ]);
 
         \App\Models\SystemSetting::updateOrCreate(
             ['key' => 'system_title'],
             ['value' => $request->system_title]
         );
+
+        if ($request->filled('primary_color_hex')) {
+            \App\Models\SystemSetting::updateOrCreate(['key' => 'primary_color_hex'], ['value' => $request->primary_color_hex]);
+        }
 
         if ($request->filled('system_author_name')) {
             \App\Models\SystemSetting::updateOrCreate(['key' => 'system_author_name'], ['value' => $request->system_author_name]);

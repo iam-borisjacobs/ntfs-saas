@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-[#003B73] leading-tight">
+        <h2 class="font-semibold text-xl text-primary leading-tight">
             {{ isset($user) ? 'Manage User: ' . $user->name : 'Onboard New User' }}
         </h2>
     </x-slot>
@@ -12,7 +12,7 @@
                     method="POST" class="space-y-6"
                     x-data="{
                         selectedStation: '{{ old('station_id', $user->department->station_id ?? '') }}',
-                        departments: {{ $departments->toJson() }}
+                        @term('departments', 'departments'): {{ $departments->toJson() }}
                     }">
                     @csrf
                     @if (isset($user))
@@ -25,34 +25,34 @@
                             <h3 class="text-lg font-bold text-gray-900 border-b pb-2">Identity</h3>
 
                             <div>
-                                <label for="system_identifier" class="block text-sm font-semibold text-[#003B73]">System
+                                <label for="system_identifier" class="block text-sm font-semibold text-primary">System
                                     Identifier (e.g. NAMA/CR/001)</label>
                                 <input type="text" name="system_identifier" id="system_identifier"
                                     value="{{ old('system_identifier', $user->system_identifier ?? '') }}" required
                                     placeholder="Unique ID..."
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] font-mono shadow-sm transition">
+                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary font-mono shadow-sm transition">
                                 @error('system_identifier')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label for="name" class="block text-sm font-semibold text-[#003B73]">Full
+                                <label for="name" class="block text-sm font-semibold text-primary">Full
                                     Name</label>
                                 <input type="text" name="name" id="name"
                                     value="{{ old('name', $user->name ?? '') }}" required
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] shadow-sm">
+                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary shadow-sm">
                                 @error('name')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label for="email" class="block text-sm font-semibold text-[#003B73]">Email
+                                <label for="email" class="block text-sm font-semibold text-primary">Email
                                     Address</label>
                                 <input type="email" name="email" id="email"
                                     value="{{ old('email', $user->email ?? '') }}" required
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] shadow-sm">
+                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary shadow-sm">
                                 @error('email')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -61,10 +61,10 @@
                             <!-- Password block -->
                             <div>
                                 <label for="password"
-                                    class="block text-sm font-semibold text-[#003B73]">{{ isset($user) ? 'New Password (Leave blank to keep current)' : 'Initial Password' }}</label>
+                                    class="block text-sm font-semibold text-primary">{{ isset($user) ? 'New Password (Leave blank to keep current)' : 'Initial Password' }}</label>
                                 <input type="password" name="password" id="password"
                                     {{ isset($user) ? '' : 'required' }}
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] shadow-sm">
+                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary shadow-sm">
                                 @error('password')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -72,10 +72,10 @@
 
                             <div>
                                 <label for="password_confirmation"
-                                    class="block text-sm font-semibold text-[#003B73]">Confirm Password</label>
+                                    class="block text-sm font-semibold text-primary">Confirm Password</label>
                                 <input type="password" name="password_confirmation" id="password_confirmation"
                                     {{ isset($user) ? '' : 'required' }}
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] shadow-sm">
+                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary shadow-sm">
                             </div>
                         </div>
 
@@ -85,10 +85,10 @@
 
                             <div>
                                 <label for="station_id"
-                                    class="block text-sm font-semibold text-[#003B73]">Station / Location</label>
+                                    class="block text-sm font-semibold text-primary">Station / Location</label>
                                 <x-custom-select>
                                     <select id="station_id" name="station_id" x-model="selectedStation"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary shadow-sm transition"
                                         required>
                                         <option value="">Select Station...</option>
                                         @foreach ($stations as $station)
@@ -100,13 +100,13 @@
 
                             <div>
                                 <label for="department_id"
-                                    class="block text-sm font-semibold text-[#003B73]">Department</label>
+                                    class="block text-sm font-semibold text-primary">@term('department', 'Department')</label>
                                 <x-custom-select>
                                     <select id="department_id" name="department_id"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary shadow-sm transition"
                                         required x-bind:disabled="!selectedStation">
-                                        <option value="">Select Department...</option>
-                                        <template x-for="dept in departments.filter(d => d.station_id == selectedStation)" :key="dept.id">
+                                        <option value="">Select @term('department', 'Department')...</option>
+                                        <template x-for="dept in @term('departments', 'departments').filter(d => d.station_id == selectedStation)" :key="dept.id">
                                             <option :value="dept.id" x-text="dept.name" :selected="dept.id == {{ old('department_id', $user->department_id ?? 'null') }}"></option>
                                         </template>
                                     </select>
@@ -117,11 +117,11 @@
                             </div>
 
                             <div>
-                                <label for="role" class="block text-sm font-semibold text-[#003B73]">System Role
+                                <label for="role" class="block text-sm font-semibold text-primary">System Role
                                     (RBAC)</label>
                                 <x-custom-select>
                                     <select id="role" name="role"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary shadow-sm transition"
                                         required>
                                         @foreach ($roles as $role)
                                             <option value="{{ $role->name }}"
@@ -136,11 +136,11 @@
                             </div>
 
                             <div>
-                                <label for="clearance_level" class="block text-sm font-semibold text-[#003B73]">Data
+                                <label for="clearance_level" class="block text-sm font-semibold text-primary">Data
                                     Clearance Level</label>
                                 <x-custom-select>
                                     <select id="clearance_level" name="clearance_level"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition"
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary shadow-sm transition"
                                         required>
                                         <option value="1"
                                             {{ old('clearance_level', $user->clearance_level ?? 1) == 1 ? 'selected' : '' }}>
@@ -164,11 +164,11 @@
                             </div>
 
                             <div>
-                                <label for="is_active" class="block text-sm font-semibold text-[#003B73]">Account
+                                <label for="is_active" class="block text-sm font-semibold text-primary">Account
                                     Status</label>
                                 <x-custom-select>
                                     <select id="is_active" name="is_active"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm transition">
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary shadow-sm transition">
                                         <option value="1"
                                             {{ old('is_active', $user->is_active ?? 1) == 1 ? 'selected' : '' }}>Active -
                                             Enabled</option>
@@ -188,7 +188,7 @@
                         <a href="{{ route('admin.users.index') }}"
                             class="px-4 py-2 text-gray-600 hover:text-gray-900 font-semibold text-sm mt-1">Cancel</a>
                         <button type="submit"
-                            class="px-6 py-2 bg-[#003B73] text-white rounded-sm font-bold text-sm uppercase tracking-wide hover:bg-blue-800 transition shadow-md">
+                            class="px-6 py-2 bg-primary text-white rounded-sm font-bold text-sm uppercase tracking-wide hover:bg-blue-800 transition shadow-md">
                             {{ isset($user) ? 'Update User' : 'Onboard User' }}
                         </button>
                     </div>

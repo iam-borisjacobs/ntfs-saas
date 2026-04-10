@@ -6,7 +6,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
             </a>
-            <h2 class="font-semibold text-xl text-[#003B73] leading-tight">{{ __('Receive File Jacket') }}</h2>
+            <h2 class="font-semibold text-xl text-primary leading-tight">{{ __('Receive ') . App\Models\SystemTerminology::getTerm('file_jacket', 'File Jacket') }}</h2>
         </div>
     </x-slot>
 
@@ -39,7 +39,7 @@
 
                 <div class="grid grid-cols-2 gap-4 text-sm border-t border-gray-100 pt-4">
                     <div>
-                        <span class="block text-xs font-semibold text-gray-400 uppercase">From Department</span>
+                        <span class="block text-xs font-semibold text-gray-400 uppercase">From @term('department', 'Department')</span>
                         <span
                             class="block text-gray-900 font-medium mt-0.5">{{ $movement->fromDepartment->name }}</span>
                     </div>
@@ -74,7 +74,7 @@
                     <div class="bg-blue-50 border border-blue-100 rounded p-3 mb-4">
                         <p class="text-xs text-blue-700">
                             <strong>What happens next:</strong> Receiving this jacket will transfer it and all documents
-                            inside to your department. You will become the current holder.
+                            inside to your @term('department', 'department'). You will become the current holder.
                         </p>
                     </div>
                     <button type="button" @click="showConfirmModal = true"

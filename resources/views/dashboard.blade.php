@@ -46,7 +46,7 @@
             <p class="text-3xl font-bold text-gray-900 mt-1">{{ $metrics['notifications'] }}</p>
         </div>
 
-        <!-- Department Inbox Card -->
+        <!-- @term('department', 'Department') Inbox Card -->
         <a href="{{ route('queues.department-inbox') }}"
             class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center text-center hover:shadow-md transition">
             <div class="h-12 w-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
@@ -74,18 +74,18 @@
             <!-- Quick Search Form -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" x-data="{ open: false }">
                 <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-blue-50/30">
-                    <h3 class="text-lg font-bold text-[#003B73]">Search & Reporting Engine</h3>
+                    <h3 class="text-lg font-bold text-primary">Search & Reporting Engine</h3>
                     <a href="{{ route('reports.index') }}"
-                        class="text-xs font-semibold text-[#003B73] hover:underline bg-white px-3 py-1 border border-blue-200 rounded-full shadow-sm">Advanced
+                        class="text-xs font-semibold text-primary hover:underline bg-white px-3 py-1 border border-blue-200 rounded-full shadow-sm">Advanced
                         Portal &rarr;</a>
                 </div>
                 <div class="p-6">
                     <form action="{{ route('reports.index') }}" method="GET">
                         <div class="flex space-x-4">
                             <input type="text" name="q" placeholder="Search by File Ref No, Title, or Topic..."
-                                class="flex-1 border-gray-300 focus:border-[#003B73] focus:ring-[#003B73] rounded-md shadow-sm p-3 text-sm">
+                                class="flex-1 border-gray-300 focus:border-primary focus:ring-primary rounded-md shadow-sm p-3 text-sm">
                             <button type="submit"
-                                class="px-6 py-3 bg-[#003B73] text-white font-bold rounded-md hover:bg-blue-800 transition text-sm flex items-center shadow-sm">
+                                class="px-6 py-3 bg-primary text-white font-bold rounded-md hover:bg-blue-800 transition text-sm flex items-center shadow-sm">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -175,12 +175,12 @@
                         @foreach ($pendingFiles as $pf)
                             <a href="{{ route('files.show', $pf->uuid) }}" class="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition group">
                                 <div class="flex-shrink-0 w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-[#003B73]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-gray-800 truncate group-hover:text-[#003B73] transition">{{ Str::limit($pf->title, 35) }}</p>
+                                    <p class="text-sm font-semibold text-gray-800 truncate group-hover:text-primary transition">{{ Str::limit($pf->title, 35) }}</p>
                                     <p class="text-xs text-gray-400 font-mono">{{ $pf->file_reference_number }}</p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
@@ -192,7 +192,7 @@
                     </div>
                     @if ($metrics['pending'] > 5)
                         <div class="p-4 border-t border-gray-100 text-center">
-                            <a href="{{ route('queues.pending') }}" class="bg-[#003B73] hover:bg-blue-800 text-white px-6 py-2 rounded text-sm font-medium transition inline-block">View All {{ $metrics['pending'] }} Files</a>
+                            <a href="{{ route('queues.pending') }}" class="bg-primary hover:bg-blue-800 text-white px-6 py-2 rounded text-sm font-medium transition inline-block">View All {{ $metrics['pending'] }} Files</a>
                         </div>
                     @endif
                 @endif
@@ -226,7 +226,7 @@
                         <template x-for="day in daysInMonth">
                             <div class="relative w-8 h-8 flex items-center justify-center rounded-full mx-auto transition-colors"
                                  :class="{
-                                     'bg-[#003B73] text-white font-bold shadow-md cursor-pointer': isToday(day) && isValidDate(day),
+                                     'bg-primary text-white font-bold shadow-md cursor-pointer': isToday(day) && isValidDate(day),
                                      'hover:bg-gray-100 cursor-pointer text-gray-700': !isToday(day) && isValidDate(day),
                                      'opacity-30 cursor-not-allowed text-gray-400': !isValidDate(day)
                                  }"
@@ -242,7 +242,7 @@
 
                     <!-- Loader overlay -->
                     <div x-show="loading" class="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
-                        <svg class="animate-spin h-5 w-5 text-[#003B73]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     </div>
                 </div>
 
@@ -253,7 +253,7 @@
                         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                         <div x-show="isModalOpen" x-transition class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
                             
-                            <div class="bg-gradient-to-r from-[#003B73] to-blue-800 px-4 py-3 border-b border-blue-900">
+                            <div class="bg-gradient-to-r from-primary to-blue-800 px-4 py-3 border-b border-blue-900">
                                 <h3 class="text-lg font-bold text-white flex justify-between items-center" id="modal-title">
                                     <span x-text="'Reminders: ' + getFormattedSelectedDate()"></span>
                                     <button @click="closeModal" class="text-white hover:text-gray-200 focus:outline-none">&times;</button>
@@ -269,7 +269,7 @@
                                         <li class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-start group">
                                             <div class="flex-1">
                                                 <div class="flex items-center gap-2 mb-1">
-                                                    <input type="checkbox" :checked="rem.is_completed" @change="toggleReminder(rem)" class="text-[#003B73] focus:ring-[#003B73] rounded border-gray-300">
+                                                    <input type="checkbox" :checked="rem.is_completed" @change="toggleReminder(rem)" class="text-primary focus:ring-primary rounded border-gray-300">
                                                     <span class="font-bold text-sm text-gray-800" :class="rem.is_completed ? 'line-through text-gray-400' : ''" x-text="rem.title"></span>
                                                 </div>
                                                 <p x-show="rem.description" class="text-xs text-gray-500 pl-6 line-clamp-2" x-text="rem.description"></p>
@@ -287,15 +287,15 @@
                                 <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Add New Reminder</h4>
                                 <div class="space-y-3">
                                     <div>
-                                        <input type="text" x-model="newReminder.title" placeholder="Reminder title..." class="focus:ring-[#003B73] focus:border-[#003B73] block w-full sm:text-sm border-gray-300 rounded-md placeholder-gray-400 font-medium">
+                                        <input type="text" x-model="newReminder.title" placeholder="Reminder title..." class="focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md placeholder-gray-400 font-medium">
                                     </div>
                                     <div>
-                                        <textarea x-model="newReminder.description" rows="2" placeholder="Notes (optional)..." class="focus:ring-[#003B73] focus:border-[#003B73] block w-full sm:text-sm border-gray-300 rounded-md placeholder-gray-400 text-gray-600"></textarea>
+                                        <textarea x-model="newReminder.description" rows="2" placeholder="Notes (optional)..." class="focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md placeholder-gray-400 text-gray-600"></textarea>
                                     </div>
                                 </div>
                             </div>
                             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100">
-                                <button type="button" @click="saveReminder()" :disabled="!newReminder.title || saving" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#003B73] text-base font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B73] sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 transition-colors">
+                                <button type="button" @click="saveReminder()" :disabled="!newReminder.title || saving" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 transition-colors">
                                     <span x-show="!saving">Save Reminder</span>
                                     <span x-show="saving">Saving...</span>
                                 </button>

@@ -11,11 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Enable Trigram Extension for partial title matches
-        \Illuminate\Support\Facades\DB::unprepared('CREATE EXTENSION IF NOT EXISTS pg_trgm;');
-
-        // Create GIN Trigram index on file titles
-        \Illuminate\Support\Facades\DB::unprepared('CREATE INDEX idx_files_title_trgm ON file_records USING gin (title gin_trgm_ops);');
+        // Enable Trigram Extension for partial title matches (PostgreSQL only)
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::unprepared('CREATE EXTENSION IF NOT EXISTS pg_trgm;');
+            \Illuminate\Support\Facades\DB::unprepared('CREATE INDEX idx_files_title_trgm ON file_records USING gin (title gin_trgm_ops);');
+        } else {
+            // Graceful fallback to standard indexing for MySQL/SQLite simple searches
+            Schema::table('file_records', function (Blueprint $table) {
+                $table->index('title', 'idx_files_title_basic');
+            });
+        }
 
         // Create specific indexes for movement timeline queries
         Schema::table('file_movements', function (Blueprint $table) {
@@ -43,7 +48,15 @@ return new class extends Migration
             $table->dropIndex('idx_movements_timeline');
         });
 
-        \Illuminate\Support\Facades\DB::unprepared('DROP INDEX IF EXISTS idx_files_title_trgm;');
-        // Avoid dropping extension as it might be used globally
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::unprepared('DROP INDEX IF EXISTS idx_files_title_trgm;');
+            // Avoid dropping extension as it might be used globally
+        } else {
+            Schema::table('file_records', function (Blueprint $table) {
+                if (\Illuminate\Support\Facades\Schema::hasColumn('file_records', 'title')) {
+                    $table->dropIndex('idx_files_title_basic');
+                }
+            });
+        }
     }
 };

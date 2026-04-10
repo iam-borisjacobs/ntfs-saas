@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-[#003B73] leading-tight">
+        <h2 class="font-semibold text-xl text-primary leading-tight">
             {{ __('Pending Files (My Desk)') }}
         </h2>
     </x-slot>
@@ -22,23 +22,23 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         File Reference</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Subject / Title</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Current Status</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Last Updated</th>
                                     <th class="px-6 py-3 text-right"><span class="sr-only">Actions</span></th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse ($files as $file)
-                                    <tr class="hover:bg-gray-50 transition border-l-4 border-l-[#003B73]">
+                                    <tr class="hover:bg-gray-50 transition border-l-4 border-l-primary">
                                         <td class="px-6 py-4 whitespace-nowrap font-mono text-xs text-gray-600">
                                             {{ $file->file_reference_number }}</td>
                                         <td class="px-6 py-4">
@@ -57,9 +57,9 @@
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-right font-medium flex justify-end space-x-2 items-center">
                                                 <a href="{{ route('files.show', $file->uuid) }}"
-                                                    class="text-[#003B73] hover:text-blue-900 underline font-semibold px-2">View</a>
+                                                    class="text-primary hover:text-blue-900 underline font-semibold px-2">View</a>
                                                 <a href="{{ route('files.dispatch.create', $file->uuid) }}"
-                                                    class="inline-flex items-center px-4 py-2 bg-[#003B73] border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
+                                                    class="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
                                                     Dispatch
                                                 </a>
                                                 <button type="button" 
@@ -145,7 +145,7 @@
                                 Confirm Closure
                             </button>
                             <button type="button" @click="showCloseModal = false"
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B73] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                                 Cancel
                             </button>
                         </div>

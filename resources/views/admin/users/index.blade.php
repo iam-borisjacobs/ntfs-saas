@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-6">
-            <h2 class="font-semibold text-xl text-[#003B73] leading-tight">
+            <h2 class="font-semibold text-xl text-primary leading-tight">
                 {{ __('User Management') }}
             </h2>
             <a href="{{ route('admin.users.create') }}"
-                class="px-4 py-2 bg-[#003B73] text-white rounded-sm text-sm font-semibold tracking-wide hover:bg-blue-800 transition">
+                class="px-4 py-2 bg-primary text-white rounded-sm text-sm font-semibold tracking-wide hover:bg-blue-800 transition">
                 + ONBOARD USER
             </a>
         </div>
@@ -18,17 +18,17 @@
                     <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                 Name & Email
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
-                                Department</th>
+                                class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
+                                @term('department', 'Department')</th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                 Role & Clearance</th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                 Status</th>
                             <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                         </tr>
@@ -66,7 +66,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right font-medium">
                                     <a href="{{ route('admin.users.edit', $user->id) }}"
-                                        class="text-[#003B73] hover:text-blue-900 underline">Manage</a>
+                                        class="text-primary hover:text-blue-900 underline">Manage</a>
                                 </td>
                             </tr>
                         @endforeach

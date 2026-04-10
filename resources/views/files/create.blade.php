@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-[#003B73] leading-tight">
+        <h2 class="font-semibold text-xl text-primary leading-tight">
             {{ __('Generate or Create File') }}
         </h2>
     </x-slot>
@@ -11,7 +11,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div class="lg:col-span-2" x-data="generateForm()">
                         <div class="mb-8 border-b border-gray-100 pb-4">
-                            <h3 class="text-lg font-bold text-[#003B73] mb-1">File Metadata</h3>
+                            <h3 class="text-lg font-bold text-primary mb-1">File Metadata</h3>
                             <p class="text-sm text-gray-500">Register a new physical file into the system to begin
                                 formal
                                 tracking and custody logging.</p>
@@ -48,11 +48,11 @@
 
                             {{-- Reference Document (Optional) --}}
                             <div class="mb-6">
-                                <label for="reference_file_id" class="block text-sm font-semibold text-[#003B73]">Reference
+                                <label for="reference_file_id" class="block text-sm font-semibold text-primary">Reference
                                     Document (Optional)</label>
                                 <x-custom-select>
                                     <select id="reference_file_id" name="reference_file_id" @change="handleReferenceSelection($event)"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition">
                                         <option value="">— No Reference —</option>
                                         @foreach ($closedFiles as $closedFile)
                                             <option value="{{ $closedFile->id }}"
@@ -67,24 +67,23 @@
 
                             {{-- Title --}}
                             <div class="pt-4 border-t border-gray-100">
-                                <label for="title" class="block text-sm font-semibold text-[#003B73]">File Subject /
+                                <label for="title" class="block text-sm font-semibold text-primary">File Subject /
                                     Title</label>
                                 <input type="text" name="title" id="title" x-model="fileTitle"
-                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition">
                                 <p class="mt-1 text-xs text-gray-400">The primary descriptive title written on the
                                     physical folder.</p>
                             </div>
 
-                            {{-- File Jacket --}}
+                            {{-- @term('file_jacket', 'File Jacket') --}}
                             <div>
-                                <label for="file_jacket_id" class="block text-sm font-semibold text-[#003B73]">File
-                                    Jacket</label>
+                                <label for="file_jacket_id" class="block text-sm font-semibold text-primary">@term('file_jacket', 'File Jacket')</label>
                                 <div class="flex gap-2 mt-1">
                                     <div class="flex-1 w-full min-w-0">
                                         <x-custom-select>
                                             <select name="file_jacket_id" id="file_jacket_id"
-                                                class="block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
-                                                <option value="">Select Jacket...</option>
+                                                class="block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition">
+                                                <option value="">Select @term('file_jacket', 'Jacket')...</option>
                                                 @foreach ($jackets as $jacket)
                                                     <option value="{{ $jacket->id }}"
                                                         {{ (old('file_jacket_id') ?? $preselectedJacketId) == $jacket->id ? 'selected' : '' }}>
@@ -95,7 +94,7 @@
                                         </x-custom-select>
                                     </div>
                                     <button type="button" @click="showJacketModal = true"
-                                        class="flex-shrink-0 inline-flex items-center px-3 py-2 bg-white border border-[#003B73] text-[#003B73] text-xs font-semibold rounded-sm hover:bg-[#003B73] hover:text-white transition">
+                                        class="flex-shrink-0 inline-flex items-center px-3 py-2 bg-white border border-primary text-primary text-xs font-semibold rounded-sm hover:bg-primary hover:text-white transition">
                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -108,22 +107,20 @@
                                 </p>
                             </div>
 
-                            {{-- Department & Station (Automated Origin Lock) --}}
+                            {{-- @term('department', 'Department') & Station (Automated Origin Lock) --}}
                             <div class="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-semibold text-[#003B73]">Originating
-                                        Station</label>
+                                    <label class="block text-sm font-semibold text-primary">Originating @term('station', 'Station')</label>
                                     <input type="text" disabled value="{{ Auth::user()->department->station->name ?? 'Unknown' }}"
                                         class="mt-1 block w-full rounded-sm border-gray-300 bg-gray-50 text-gray-500 shadow-sm cursor-not-allowed">
                                     <p class="mt-1 text-xs text-gray-400">Locked to your assigned region.</p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-semibold text-[#003B73]">Originating
-                                        Department</label>
+                                    <label class="block text-sm font-semibold text-primary">Originating @term('department', 'Department')</label>
                                     <input type="text" disabled value="{{ Auth::user()->department->name ?? 'Unknown' }}"
                                         class="mt-1 block w-full rounded-sm border-gray-300 bg-gray-50 text-gray-500 shadow-sm cursor-not-allowed">
                                     <input type="hidden" name="department_id" value="{{ Auth::user()->department_id }}">
-                                    <p class="mt-1 text-xs text-gray-400">Locked to your current department.</p>
+                                    <p class="mt-1 text-xs text-gray-400">Locked to your current @term('department', 'department').</p>
                                 </div>
                             </div>
 
@@ -131,11 +128,11 @@
                             {{-- Priority + Confidentiality --}}
                             <div class="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label for="priority" class="block text-sm font-semibold text-[#003B73]">Priority
+                                    <label for="priority" class="block text-sm font-semibold text-primary">Priority
                                         Level</label>
                                     <x-custom-select>
                                         <select id="priority" name="priority_level"
-                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm">
+                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary shadow-sm">
                                             <option value="1">1 - Routine</option>
                                             <option value="2">2 - Urgent</option>
                                             <option value="3">3 - Critical</option>
@@ -144,11 +141,11 @@
                                 </div>
                                 <div>
                                     <label for="confidentiality"
-                                        class="block text-sm font-semibold text-[#003B73]">Confidentiality
+                                        class="block text-sm font-semibold text-primary">Confidentiality
                                         Clearance</label>
                                     <x-custom-select>
                                         <select id="confidentiality" name="confidentiality_level"
-                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] shadow-sm">
+                                            class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary shadow-sm">
                                             <option value="1">Level 1 (General)</option>
                                             <option value="2">Level 2 (Restricted)</option>
                                             <option value="3">Level 3 (Secret)</option>
@@ -160,11 +157,11 @@
                             @if (config('digital_module.enabled'))
                                 <div class="pt-6 border-t border-gray-100">
                                     <label for="digital_document"
-                                        class="block text-sm font-semibold text-[#003B73]">Optional
+                                        class="block text-sm font-semibold text-primary">Optional
                                         Digital Attachment</label>
                                     <input type="file" name="digital_document" id="digital_document"
                                         accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                                        class="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#003B73] file:text-white hover:file:bg-blue-800 transition shadow-sm border border-gray-200 rounded-md bg-white">
+                                        class="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-800 transition shadow-sm border border-gray-200 rounded-md bg-white">
                                     <p class="mt-1 text-xs text-gray-400">Attach an initial scan or PDF if available.
                                         Max limit
                                         {{ config('digital_module.max_upload_size') / 1024 }}MB.</p>
@@ -174,12 +171,12 @@
                             {{-- Initial Dispatch (Optional) --}}
                             <div class="pt-6 border-t border-gray-100">
                                 <div class="flex items-center gap-2 mb-4">
-                                    <svg class="w-5 h-5 text-[#003B73]" fill="none" stroke="currentColor"
+                                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
                                     </svg>
-                                    <h4 class="font-bold text-[#003B73] text-sm uppercase tracking-wider">Initial
+                                    <h4 class="font-bold text-primary text-sm uppercase tracking-wider">Initial
                                         Dispatch (Optional)</h4>
                                 </div>
                                 <p class="text-xs text-gray-500 mb-4">Dispatch this document immediately after creation.
@@ -188,12 +185,12 @@
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label for="dispatch_station_id"
-                                            class="block text-sm font-semibold text-[#003B73]">Destination
-                                            Station</label>
+                                            class="block text-sm font-semibold text-primary">Destination
+                                            @term('station', 'Station')</label>
                                         <x-custom-select>
                                             <select id="dispatch_station_id" name="dispatch_station_id"
                                                 x-model="dispatchStationId" @change="resetDispatchDept()"
-                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
+                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition">
                                                 <option value="">— None —</option>
                                                 @foreach ($stations as $station)
                                                     <option value="{{ $station->id }}">{{ $station->name }}</option>
@@ -203,12 +200,12 @@
                                     </div>
                                     <div>
                                         <label for="dispatch_department_id"
-                                            class="block text-sm font-semibold text-[#003B73]">Destination
-                                            Department</label>
+                                            class="block text-sm font-semibold text-primary">Destination
+                                            @term('department', 'Department')</label>
                                         <x-custom-select>
                                             <select id="dispatch_department_id" name="dispatch_department_id"
                                                 x-model="dispatchDeptId" @change="loadUsers()" :disabled="!dispatchStationId"
-                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:text-gray-400">
+                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:text-gray-400">
                                                 <option value="">— None —</option>
                                                 <template x-for="dept in departments.filter(d => d.station_id == dispatchStationId)" :key="dept.id">
                                                     <option :value="dept.id" x-text="dept.name" :selected="dept.id == {{ old('dispatch_department_id', 'null') }}"></option>
@@ -218,13 +215,13 @@
                                     </div>
                                     <div>
                                         <label for="dispatch_user_id"
-                                            class="block text-sm font-semibold text-[#003B73]">Specific Officer
+                                            class="block text-sm font-semibold text-primary">@term('specific_officer', 'Specific Officer')
                                             (Optional)</label>
                                         <x-custom-select>
                                             <select id="dispatch_user_id" name="dispatch_user_id"
                                                 x-model="dispatchUserId" :disabled="!dispatchDeptId"
-                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:text-gray-400">
-                                                <option value="">— Department Inbox —</option>
+                                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:text-gray-400">
+                                                <option value="">— @term('department', 'Department') Inbox —</option>
                                                 <template x-for="user in deptUsers" :key="user.id">
                                                     <option :value="user.id"
                                                         x-text="user.name + (user.system_identifier ? ' (' + user.system_identifier + ')' : '')">
@@ -233,14 +230,14 @@
                                             </select>
                                         </x-custom-select>
                                         <p class="mt-1 text-xs text-gray-400">If left empty, the document goes to the
-                                            department inbox for any officer to claim.</p>
+                                            @term('department', 'department') inbox for any officer to claim.</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="pt-6 mt-6 border-t border-gray-100 flex justify-end">
                                 <button type="submit"
-                                    class="px-6 py-3 bg-[#003B73] border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-[#003B73] focus:ring-offset-2 transition ease-in-out duration-150 flex items-center shadow-md">
+                                    class="px-6 py-3 bg-primary border border-transparent rounded-sm font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition ease-in-out duration-150 flex items-center shadow-md">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -259,8 +256,8 @@
                                 <div class="p-6">
                                     <div class="flex items-center gap-3 mb-4">
                                         <div
-                                            class="h-10 w-10 rounded-full bg-[#003B73]/10 flex items-center justify-center">
-                                            <svg class="w-6 h-6 text-[#003B73]" fill="none" stroke="currentColor"
+                                            class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     stroke-width="1.5"
@@ -268,8 +265,8 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <h3 class="text-lg font-bold text-gray-900">Create New File Jacket</h3>
-                                            <p class="text-sm text-gray-500">Department:
+                                            <h3 class="text-lg font-bold text-gray-900">Create New @term('file_jacket', 'File Jacket')</h3>
+                                            <p class="text-sm text-gray-500">@term('department', 'Department'):
                                                 {{ Auth::user()->department->name ?? 'Unknown' }}</p>
                                         </div>
                                     </div>
@@ -279,13 +276,13 @@
                                                 <span class="text-red-500">*</span></label>
                                             <input type="text" x-model="jacketTitle"
                                                 placeholder="e.g. Budget Review 2026"
-                                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                                                class="w-full rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-1">Description
                                                 <span class="text-gray-400 font-normal">(Optional)</span></label>
                                             <textarea x-model="jacketDesc" rows="2" placeholder="Brief description of the case"
-                                                class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm"></textarea>
+                                                class="w-full rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm"></textarea>
                                         </div>
                                         <p class="text-xs text-red-600" x-show="jacketError" x-text="jacketError">
                                         </p>
@@ -293,7 +290,7 @@
                                             <button type="button" @click="showJacketModal = false"
                                                 class="px-4 py-2 bg-white border border-gray-300 rounded-sm text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
                                             <button type="button" @click="createJacket()" :disabled="jacketLoading"
-                                                class="px-4 py-2 bg-[#003B73] text-white rounded-sm text-sm font-semibold hover:bg-[#00294d] transition disabled:opacity-50">
+                                                class="px-4 py-2 bg-primary text-white rounded-sm text-sm font-semibold hover:bg-[#00294d] transition disabled:opacity-50">
                                                 <span x-show="!jacketLoading">Create Jacket</span>
                                                 <span x-show="jacketLoading">Creating...</span>
                                             </button>
@@ -308,12 +305,12 @@
                     <div class="lg:col-span-1 bg-gray-50/50 p-6 rounded-md border border-gray-100 space-y-6">
                         <div>
                             <div class="flex items-center mb-3">
-                                <svg class="w-5 h-5 text-[#003B73] mr-2" fill="none" stroke="currentColor"
+                                <svg class="w-5 h-5 text-primary mr-2" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                <h4 class="font-bold text-[#003B73] text-sm uppercase tracking-wider">Filing Guidelines
+                                <h4 class="font-bold text-primary text-sm uppercase tracking-wider">Filing Guidelines
                                 </h4>
                             </div>
                             <ul class="text-sm text-gray-600 space-y-2 list-disc pl-5">
@@ -358,9 +355,9 @@
                             </div>
                             <p class="text-xs text-gray-600 leading-relaxed">
                                 You can optionally dispatch this document immediately after creation.
-                                If you select a <strong>Destination Department</strong>, the file will be sent there
+                                If you select a <strong>Destination @term('department', 'Department')</strong>, the file will be sent there
                                 upon generation.
-                                Leave the officer field empty to send to the department inbox.
+                                Leave the officer field empty to send to the @term('department', 'department') inbox.
                             </p>
                         </div>
 

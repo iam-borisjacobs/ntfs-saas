@@ -13,14 +13,14 @@
 
         .header {
             text-align: center;
-            border-bottom: 2px solid #003B73;
+            border-bottom: 2px solid {{ \App\Models\SystemSetting::where("key", "primary_color_hex")->value("value") ?: "#003B73" }};
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
 
         .header h1 {
             margin: 0;
-            color: #003B73;
+            color: {{ \App\Models\SystemSetting::where("key", "primary_color_hex")->value("value") ?: "#003B73" }};
             font-size: 18pt;
         }
 
@@ -92,7 +92,7 @@
                 <th>File Reference</th>
                 <th>Title</th>
                 <th>Current Owner</th>
-                <th>Department</th>
+                <th>@term('department', 'Department')</th>
                 <th>Status</th>
                 <th>Priority</th>
                 <th>Created At</th>

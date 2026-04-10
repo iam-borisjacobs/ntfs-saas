@@ -44,12 +44,14 @@ class FileSearchService
         // Limit wildcard abuse
         $term = str_replace('%', '', $term);
 
+        $operator = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'LIKE';
+
         return $this->getRbacBaseQuery()
-            ->where(function (Builder $q) use ($term) {
+            ->where(function (Builder $q) use ($term, $operator) {
                 // 1. Exact Reference Match (B-Tree index) prioritised
                 $q->where('file_reference_number', $term)
-                  // 2. Partial Title match (GIN Trigram index via raw whereRaw)
-                  ->orWhereRaw("title ILIKE ?", ["%{$term}%"]);
+                  // 2. Partial Title match (Case-insensitive fuzzy search)
+                  ->orWhere('title', $operator, "%{$term}%");
             })
             ->with(['status', 'currentDepartment', 'currentOwner'])
             ->orderByRaw("CASE WHEN file_reference_number = ? THEN 1 ELSE 2 END", [$term])

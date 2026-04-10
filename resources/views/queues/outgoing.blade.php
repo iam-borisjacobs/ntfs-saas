@@ -47,7 +47,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right font-medium">
                                             <a href="{{ route('files.show', $file->uuid) }}"
-                                                class="text-[#003B73] hover:text-blue-900 underline">View</a>
+                                                class="text-primary hover:text-blue-900 underline">View</a>
                                         </td>
                                     </tr>
                                 @empty

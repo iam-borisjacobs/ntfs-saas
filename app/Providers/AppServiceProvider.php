@@ -23,6 +23,11 @@ class AppServiceProvider extends ServiceProvider
         // Prevents N+1 query explosions by throwing an exception if lazy loading is attempted outside production.
         \Illuminate\Database\Eloquent\Model::preventLazyLoading(!app()->isProduction());
 
+        // Custom Blade directive for Database-Driven Terminology
+        \Illuminate\Support\Facades\Blade::directive('term', function ($expression) {
+            return "<?php echo \App\Models\SystemTerminology::getTerm($expression); ?>";
+        });
+
         // Phase 12: Override Digital Module flag dynamically from Admin Settings
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('system_settings')) {

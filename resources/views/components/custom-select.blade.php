@@ -6,7 +6,7 @@
 
     {{-- Custom Styled Dropdown Button --}}
     <button type="button" @click="toggle()" x-ref="triggerBtn"
-        class="relative w-full bg-white border border-gray-300 rounded-sm shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-[#003B73] focus:border-[#003B73] sm:text-sm transition ease-in-out duration-150"
+        class="relative w-full bg-white border border-gray-300 rounded-sm shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition ease-in-out duration-150"
         aria-haspopup="listbox" :aria-expanded="open" aria-labelledby="listbox-label">
         
         <span class="block truncate" x-text="selectedText || '— Select an Option —'" :class="{'text-gray-400': !selectedText, 'text-gray-900': selectedText}">
@@ -45,7 +45,7 @@
                         </svg>
                     </div>
                     <input type="text" x-model="search" @click.stop placeholder="Search..."
-                        class="block w-full pl-9 pr-3 py-1.5 border border-gray-200 rounded-sm leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-[#003B73] focus:border-[#003B73] sm:text-sm">
+                        class="block w-full pl-9 pr-3 py-1.5 border border-gray-200 rounded-sm leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm">
                 </div>
             </div>
 
@@ -58,14 +58,14 @@
                 {{-- Render Options --}}
                 <template x-for="(opt, index) in filteredOptions" :key="index">
                     <li @click="selectOption(opt.value)"
-                        class="text-gray-900 cursor-pointer select-none relative py-2.5 pl-3 pr-9 hover:bg-[#003B73] hover:text-white group border-b border-gray-50 last:border-0"
-                        :class="{'bg-blue-50 text-[#003B73] font-semibold': isSelected(opt.value)}">
+                        class="text-gray-900 cursor-pointer select-none relative py-2.5 pl-3 pr-9 hover:bg-primary hover:text-white group border-b border-gray-50 last:border-0"
+                        :class="{'bg-blue-50 text-primary font-semibold': isSelected(opt.value)}">
                         
                         <span class="block truncate" x-text="opt.text" :class="{'font-semibold': isSelected(opt.value), 'font-normal': !isSelected(opt.value)}"></span>
                         
                         {{-- Checkmark for selected item --}}
                         <span x-show="isSelected(opt.value)"
-                            class="text-[#003B73] group-hover:text-white absolute inset-y-0 right-0 flex items-center pr-4">
+                            class="text-primary group-hover:text-white absolute inset-y-0 right-0 flex items-center pr-4">
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                 fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd"

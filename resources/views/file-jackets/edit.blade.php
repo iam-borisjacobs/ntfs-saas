@@ -6,7 +6,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
             </a>
-            <h2 class="font-semibold text-xl text-[#003B73] leading-tight">{{ __('Edit File Jacket') }}</h2>
+            <h2 class="font-semibold text-xl text-primary leading-tight">{{ __('Edit ') . App\Models\SystemTerminology::getTerm('file_jacket', 'File Jacket') }}</h2>
         </div>
     </x-slot>
 
@@ -14,7 +14,7 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 w-full">
             <div class="bg-white p-6 shadow-sm border border-gray-200 rounded">
                 <div class="mb-6">
-                    <span class="font-mono text-sm font-bold text-[#003B73]">{{ $jacket->jacket_code }}</span>
+                    <span class="font-mono text-sm font-bold text-primary">{{ $jacket->jacket_code }}</span>
                     <span class="text-xs text-gray-500 ml-2">· {{ ucfirst($jacket->status) }}</span>
                 </div>
 
@@ -33,22 +33,22 @@
                     @method('PUT')
 
                     <div>
-                        <label class="block text-sm font-semibold text-[#003B73] mb-1">Jacket Title</label>
+                        <label class="block text-sm font-semibold text-primary mb-1">Jacket Title</label>
                         <input type="text" name="title" value="{{ old('title', $jacket->title) }}"
-                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">
+                            class="w-full rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-[#003B73] mb-1">Description</label>
+                        <label class="block text-sm font-semibold text-primary mb-1">Description</label>
                         <textarea name="description" rows="3"
-                            class="w-full rounded-sm border-gray-300 text-sm focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm">{{ old('description', $jacket->description) }}</textarea>
+                            class="w-full rounded-sm border-gray-300 text-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm">{{ old('description', $jacket->description) }}</textarea>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
                         <a href="{{ route('file-jackets.show', $jacket->id) }}"
                             class="px-4 py-2 bg-white border border-gray-300 rounded-sm text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</a>
                         <button type="submit"
-                            class="px-6 py-2 bg-[#003B73] text-white rounded-sm text-sm font-bold hover:bg-[#00294d] transition">Save
+                            class="px-6 py-2 bg-primary text-white rounded-sm text-sm font-bold hover:bg-[#00294d] transition">Save
                             Changes</button>
                     </div>
                 </form>

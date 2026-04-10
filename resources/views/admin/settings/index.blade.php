@@ -25,11 +25,28 @@
                             @csrf
 
                             <div class="space-y-4">
-                                <div>
-                                    <x-input-label for="system_title" :value="__('Website Title')" />
-                                    <x-text-input id="system_title" name="system_title" type="text"
-                                        class="mt-1 block w-full" :value="old('system_title', $systemTitle)" required autofocus />
-                                    <x-input-error class="mt-2" :messages="$errors->get('system_title')" />
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <x-input-label for="system_title" :value="__('Website Title')" />
+                                        <x-text-input id="system_title" name="system_title" type="text"
+                                            class="mt-1 block w-full" :value="old('system_title', $systemTitle)" required autofocus />
+                                        <x-input-error class="mt-2" :messages="$errors->get('system_title')" />
+                                    </div>
+
+                                    <div>
+                                        <x-input-label for="primary_color_hex" :value="__('Primary Theme Color (Hex)')" />
+                                        <div class="flex items-center gap-3 mt-1">
+                                            <input type="color" id="color_picker" 
+                                                class="w-10 h-10 border-0 p-0 rounded-l cursor-pointer shadow-sm disabled:opacity-50"
+                                                x-data="{ color: '{{ old('primary_color_hex', $primaryColorHex ?? '#003B73') }}' }"
+                                                x-model="color"
+                                                @input="document.getElementById('primary_color_hex').value = $event.target.value.toUpperCase()">
+                                            <x-text-input id="primary_color_hex" name="primary_color_hex" type="text"
+                                                pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                                                class="block w-full font-mono uppercase" :value="old('primary_color_hex', $primaryColorHex ?? '#003B73')" />
+                                        </div>
+                                        <x-input-error class="mt-2" :messages="$errors->get('primary_color_hex')" />
+                                    </div>
                                 </div>
 
                                 <div class="pt-4 border-t border-gray-100">
@@ -76,7 +93,7 @@
                                         file:mr-4 file:py-2 file:px-4
                                         file:border-0 file:rounded-l-md
                                         file:text-sm file:font-semibold
-                                        file:bg-[#003B73] file:text-white
+                                        file:bg-primary file:text-white
                                         hover:file:bg-blue-800 transition shadow-sm bg-white"
                                         accept="image/png, image/x-icon, image/svg+xml, image/jpeg" />
                                     <x-input-error class="mt-2" :messages="$errors->get('favicon')" />
@@ -133,7 +150,7 @@
                                         file:mr-4 file:py-2.5 file:px-4
                                         file:border-0 file:rounded-l-md
                                         file:text-sm file:font-semibold
-                                        file:bg-[#003B73] file:text-white
+                                        file:bg-primary file:text-white
                                         hover:file:bg-blue-800 transition shadow-sm bg-white"
                                         required accept="image/png, image/jpeg, image/svg+xml" />
                                     <x-input-error class="mt-2" :messages="$errors->get('logo')" />

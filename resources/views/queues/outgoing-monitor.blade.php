@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-[#003B73] leading-tight">
+        <h2 class="font-semibold text-xl text-primary leading-tight">
             {{ __('My Outgoing Documents') }}
         </h2>
     </x-slot>
@@ -23,22 +23,22 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         File Reference</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Title</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Current Dept.</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Current Holder</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Elapsed</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-semibold text-[#003B73] uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                                         Status</th>
                                     <th class="px-4 py-3 text-right"><span class="sr-only">Actions</span></th>
                                 </tr>
@@ -104,7 +104,7 @@
                                     <tr class="hover:bg-gray-50 transition border-l-4 {{ $borderColor }}">
                                         <td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-gray-600">
                                             <a href="{{ route('files.show', $file->uuid) }}"
-                                                class="text-[#003B73] hover:underline">
+                                                class="text-primary hover:underline">
                                                 {{ $file->file_reference_number }}
                                             </a>
                                         </td>
@@ -133,7 +133,7 @@
                                         <td class="px-4 py-4 whitespace-nowrap text-right">
                                             <div class="flex items-center justify-end gap-2" x-data="{ showAlertModal: false }">
                                                 <a href="{{ route('files.show', $file->uuid) }}"
-                                                    class="text-[#003B73] hover:text-blue-900 underline font-semibold text-xs px-2">View</a>
+                                                    class="text-primary hover:text-blue-900 underline font-semibold text-xs px-2">View</a>
 
                                                 @if ($canAlert)
                                                     @if ($alertCooldown)

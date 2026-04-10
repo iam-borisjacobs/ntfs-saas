@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-[#003B73] leading-tight">
+        <h2 class="font-semibold text-xl text-primary leading-tight">
             {{ __('Dispatch Physical File') }}
         </h2>
     </x-slot>
@@ -15,7 +15,7 @@
                             <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">File
                                 Reference</span>
                             <span
-                                class="block text-lg font-mono text-[#003B73]">{{ $file->file_reference_number }}</span>
+                                class="block text-lg font-mono text-primary">{{ $file->file_reference_number }}</span>
                         </div>
                         <div class="flex-1 pl-4 border-l">
                             <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</span>
@@ -62,12 +62,12 @@
                                 return this.users.filter(u => u.department_id == this.selectedDept);
                             },
                             get dispatchLabel() {
-                                if (!this.selectedDept) return 'Select a department first';
+                                if (!this.selectedDept) return 'Select a @term('department', 'department') first';
                                 if (this.selectedUser) {
                                     const user = this.users.find(u => u.id == this.selectedUser);
                                     return user ? 'Direct dispatch to: ' + user.name : 'Direct dispatch';
                                 }
-                                return 'Dispatch to: Department Inbox';
+                                return 'Dispatch to: @term('department', 'Department') Inbox';
                             },
                             get isDeptInbox() { return this.selectedDept && !this.selectedUser; }
                         }">
@@ -76,13 +76,13 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                                <label for="to_station_id" class="block text-sm font-semibold text-[#003B73]">Target
+                                <label for="to_station_id" class="block text-sm font-semibold text-primary">Target
                                     Station <span class="text-red-500">*</span></label>
                                 <x-custom-select>
                                     <select id="to_station_id" name="to_station_id" required x-model="selectedStation"
                                         x-on:change="selectedDept = ''; selectedUser = ''"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">
-                                        <option value="">Select Destination Station...</option>
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition">
+                                        <option value="">Select Destination @term('station', 'Station')...</option>
                                         @foreach ($stations as $station)
                                             <option value="{{ $station->id }}">{{ $station->name }}</option>
                                         @endforeach
@@ -91,13 +91,13 @@
                             </div>
 
                             <div>
-                                <label for="to_department_id" class="block text-sm font-semibold text-[#003B73]">Target
-                                    Department <span class="text-red-500">*</span></label>
+                                <label for="to_department_id" class="block text-sm font-semibold text-primary">Target
+                                    @term('department', 'Department') <span class="text-red-500">*</span></label>
                                 <x-custom-select>
                                     <select id="to_department_id" name="to_department_id" required x-model="selectedDept"
                                         x-on:change="selectedUser = ''" x-bind:disabled="!selectedStation"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                        <option value="">Select Destination Department...</option>
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                        <option value="">Select Destination @term('department', 'Department')...</option>
                                         <template x-for="dept in filteredDepartments" :key="dept.id">
                                             <option :value="dept.id" x-text="dept.name + ' (' + dept.code + ')'">
                                             </option>
@@ -107,21 +107,21 @@
                             </div>
 
                             <div>
-                                <label for="to_user_id" class="block text-sm font-semibold text-[#003B73]">Target
+                                <label for="to_user_id" class="block text-sm font-semibold text-primary">Target
                                     Recipient <span class="text-gray-400 text-xs font-normal">(Optional)</span></label>
                                 <x-custom-select>
                                     <select id="to_user_id" name="to_user_id" x-model="selectedUser"
                                         x-bind:disabled="!selectedDept"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                        <option value="">-- Department Inbox (any officer) --</option>
+                                        class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                        <option value="">-- @term('department', 'Department') Inbox (any officer) --</option>
                                         <template x-for="user in filteredUsers" :key="user.id">
                                             <option :value="user.id" x-text="user.name + ' (' + user.dept_code + ')'">
                                             </option>
                                         </template>
                                     </select>
                                 </x-custom-select>
-                                <p class="text-xs text-gray-400 mt-1">Leave empty to dispatch to the department inbox.
-                                    Any officer in the department may acknowledge receipt.</p>
+                                <p class="text-xs text-gray-400 mt-1">Leave empty to dispatch to the @term('department', 'department') inbox.
+                                    Any officer in the @term('department', 'department') may acknowledge receipt.</p>
                             </div>
                         </div>
 
@@ -140,10 +140,10 @@
                         </div>
 
                         <div>
-                            <label for="remarks" class="block text-sm font-semibold text-[#003B73]">Movement Remarks /
+                            <label for="remarks" class="block text-sm font-semibold text-primary">Movement Remarks /
                                 Instructions</label>
                             <textarea id="remarks" name="remarks" rows="3"
-                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-[#003B73] focus:ring focus:ring-[#003B73] focus:ring-opacity-50 shadow-sm transition">{{ old('remarks') }}</textarea>
+                                class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 shadow-sm transition">{{ old('remarks') }}</textarea>
                             <p class="text-xs text-gray-400 mt-1">Any instructions or notes for the recipient. Placed
                                 permanently on the ledger.</p>
                         </div>
@@ -155,7 +155,7 @@
                             </a>
                             <button x-on:click="submitting = true"
                                 x-bind:class="{ 'opacity-50 cursor-not-allowed': submitting }" type="submit"
-                                class="inline-flex items-center px-6 py-2 bg-[#003B73] border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                class="inline-flex items-center px-6 py-2 bg-primary border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
