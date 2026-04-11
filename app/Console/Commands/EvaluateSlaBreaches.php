@@ -23,7 +23,7 @@ class EvaluateSlaBreaches extends Command
     /**
      * Execute the console command.
      */
-    public function handle(\App\Services\NotificationService $notificationService)
+    public function handle(\App\Services\NotificationService $notificationService, \App\Services\SmsService $smsService)
     {
         $this->info('Starting SLA Evaluation Cycle...');
 
@@ -69,6 +69,11 @@ class EvaluateSlaBreaches extends Command
                                 $msgSender,
                                 'CRITICAL'
                             );
+
+                            // Send an immediate physical mobile escalation to the delaying user if phone number exists
+                            if ($movement->toUser->phone_number) {
+                                $smsService->sendSms($movement->toUser->phone_number, "[NTFS AUTOMATIC ESCALATION]: You hold custody of a critically overdue file: " . $movement->file->file_reference_number . ". Please log in to clear pending operations.");
+                            }
 
                             $systemUser = \App\Models\User::firstWhere('system_identifier', 'SYS-ADMIN') ?? \App\Models\User::first();
                             $systemUserId = $systemUser ? $systemUser->id : 1;

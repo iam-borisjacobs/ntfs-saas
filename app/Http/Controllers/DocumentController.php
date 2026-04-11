@@ -126,7 +126,12 @@ class DocumentController extends Controller
             abort(404, 'File missing from secure storage layer.');
         }
 
-        // 2. Stream execution saves server RAM on large government PDFs
-        return Storage::disk($disk)->download($document->file_path, $document->file_name);
+        // 2. Cryptographic PDF Watermark Injection
+        if (strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION)) === 'pdf' || str_ends_with($document->file_path, '.pdf')) {
+            return \App\Services\PdfWatermarkService::streamWatermarkedPdf($document, Auth::user());
+        }
+
+        // 3. Stream execution saves server RAM on non-PDF architectures
+        return Storage::disk($disk)->download($document->file_path, 'SECURE_' . $document->file_name);
     }
 }

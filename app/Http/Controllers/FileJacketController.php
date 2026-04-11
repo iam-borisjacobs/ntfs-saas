@@ -321,7 +321,7 @@ class FileJacketController extends Controller
      */
     private function audit(string $action, int $jacketId, ?int $fileId, array $data): void
     {
-        DB::table('audit_logs')->insert([
+        \App\Services\AuditLoggerService::log([
             'agency_id' => 1,
             'action_type' => $action,
             'entity_type' => 'file_jackets',
