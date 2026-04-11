@@ -171,52 +171,135 @@
 
             </div> <!-- End Top Grid Row -->
 
-            <!-- Digital Document Module Toggle (Bottom Full Width) -->
+            <!-- Enterprise Add-ons Module (Bottom Full Width) -->
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-full">
                     <section>
                         <header>
-                            <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2">
-                                {{ __('Digital Document Add-on') }}
-                                @if (isset($digitalModuleEnabled) && $digitalModuleEnabled === 'true')
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full uppercase tracking-wider">Active</span>
-                                @else
-                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full uppercase tracking-wider">Disabled</span>
-                                @endif
+                            <h2 class="text-lg font-medium text-gray-900">
+                                {{ __('Enterprise System Add-ons') }}
                             </h2>
 
                             <p class="mt-1 text-sm text-gray-600">
-                                {{ __('Enable or disable the optional Phase 12 Digital Document capability globally. Disabling safely hides all upload/download interfaces.') }}
+                                {{ __('Enable or disable the optional premium capabilities globally. Changes take effect immediately across all active sessions.') }}
                             </p>
                         </header>
 
-                        <form method="post" action="{{ route('admin.settings.digital') }}" class="mt-6 space-y-6">
+                        <form method="post" action="{{ route('admin.settings.addons') }}" class="mt-6 space-y-6">
                             @csrf
 
-                            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                <div>
-                                    <h3 class="text-sm font-semibold text-gray-900">Toggle Module State</h3>
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        Changes take effect immediately across all active sessions.
-                                    </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Digital Document Add-on -->
+                                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 flex flex-col justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                                            Digital Document Add-on
+                                            @if (isset($digitalModuleEnabled) && $digitalModuleEnabled === 'true')
+                                                <span class="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-bold rounded-full uppercase tracking-wider">Active</span>
+                                            @else
+                                                <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold rounded-full uppercase tracking-wider">Disabled</span>
+                                            @endif
+                                        </h3>
+                                        <p class="text-xs text-gray-500 mt-1">Upload and strictly control digital lifecycle.</p>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-auto">
+                                        <button type="submit" name="digital_module_enabled" value="true"
+                                            class="px-4 py-2 text-sm font-semibold rounded shadow-sm border transition flex-1
+                                            @if (isset($digitalModuleEnabled) && $digitalModuleEnabled === 'true') bg-green-600 text-white border-green-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
+                                            Enable
+                                        </button>
+                                        <button type="submit" name="digital_module_enabled" value="false"
+                                            class="px-4 py-2 text-sm font-semibold rounded shadow-sm border transition flex-1
+                                            @if (!isset($digitalModuleEnabled) || $digitalModuleEnabled !== 'true') bg-red-600 text-white border-red-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
+                                            Disable
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div class="flex items-center gap-4 shrink-0">
-                                    <button type="submit" name="digital_module_enabled" value="true"
-                                        class="px-4 py-2 text-sm font-semibold rounded-md shadow-sm border transition
-                                        @if (isset($digitalModuleEnabled) && $digitalModuleEnabled === 'true') bg-green-600 text-white border-green-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
-                                        Enable
-                                    </button>
-
-                                    <button type="submit" name="digital_module_enabled" value="false"
-                                        class="px-4 py-2 text-sm font-semibold rounded-md shadow-sm border transition
-                                        @if (!isset($digitalModuleEnabled) || $digitalModuleEnabled !== 'true') bg-red-600 text-white border-red-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
-                                        Disable
-                                    </button>
+                                <!-- Twilio SMS Escalations -->
+                                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 flex flex-col justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                                            SMS Escalation Engine
+                                            @if (isset($smsEscalationEnabled) && $smsEscalationEnabled === 'true')
+                                                <span class="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-bold rounded-full uppercase tracking-wider">Active</span>
+                                            @else
+                                                <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold rounded-full uppercase tracking-wider">Disabled</span>
+                                            @endif
+                                        </h3>
+                                        <p class="text-xs text-gray-500 mt-1">Ping staff via Twilio SMS for SLA breaches.</p>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-auto">
+                                        <button type="submit" name="sms_escalation_enabled" value="true"
+                                            class="px-4 py-2 text-sm font-semibold rounded shadow-sm border transition flex-1
+                                            @if (isset($smsEscalationEnabled) && $smsEscalationEnabled === 'true') bg-green-600 text-white border-green-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
+                                            Enable
+                                        </button>
+                                        <button type="submit" name="sms_escalation_enabled" value="false"
+                                            class="px-4 py-2 text-sm font-semibold rounded shadow-sm border transition flex-1
+                                            @if (!isset($smsEscalationEnabled) || $smsEscalationEnabled !== 'true') bg-red-600 text-white border-red-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
+                                            Disable
+                                        </button>
+                                    </div>
                                 </div>
+
+                                <!-- Dynamic PDF Watermarks -->
+                                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 flex flex-col justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                                            Dynamic PDF Watermarks
+                                            @if (isset($pdfWatermarkEnabled) && $pdfWatermarkEnabled === 'true')
+                                                <span class="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-bold rounded-full uppercase tracking-wider">Active</span>
+                                            @else
+                                                <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold rounded-full uppercase tracking-wider">Disabled</span>
+                                            @endif
+                                        </h3>
+                                        <p class="text-xs text-gray-500 mt-1">Inject users' IP and timestamp into PDF downloads.</p>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-auto">
+                                        <button type="submit" name="pdf_watermark_enabled" value="true"
+                                            class="px-4 py-2 text-sm font-semibold rounded shadow-sm border transition flex-1
+                                            @if (isset($pdfWatermarkEnabled) && $pdfWatermarkEnabled === 'true') bg-green-600 text-white border-green-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
+                                            Enable
+                                        </button>
+                                        <button type="submit" name="pdf_watermark_enabled" value="false"
+                                            class="px-4 py-2 text-sm font-semibold rounded shadow-sm border transition flex-1
+                                            @if (!isset($pdfWatermarkEnabled) || $pdfWatermarkEnabled !== 'true') bg-red-600 text-white border-red-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
+                                            Disable
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Cryptographic Ledger -->
+                                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 flex flex-col justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                                            Cryptographic Ledger (SHA-256)
+                                            @if (isset($cryptoLedgerEnabled) && $cryptoLedgerEnabled === 'true')
+                                                <span class="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-bold rounded-full uppercase tracking-wider">Active</span>
+                                            @else
+                                                <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold rounded-full uppercase tracking-wider">Disabled</span>
+                                            @endif
+                                        </h3>
+                                        <p class="text-xs text-gray-500 mt-1">Mathematically enforce immutable system audit trails.</p>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-auto">
+                                        <button type="submit" name="crypto_ledger_enabled" value="true"
+                                            class="px-4 py-2 text-sm font-semibold rounded shadow-sm border transition flex-1
+                                            @if (isset($cryptoLedgerEnabled) && $cryptoLedgerEnabled === 'true') bg-green-600 text-white border-green-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
+                                            Enable
+                                        </button>
+                                        <button type="submit" name="crypto_ledger_enabled" value="false"
+                                            class="px-4 py-2 text-sm font-semibold rounded shadow-sm border transition flex-1
+                                            @if (!isset($cryptoLedgerEnabled) || $cryptoLedgerEnabled !== 'true') bg-red-600 text-white border-red-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
+                                            Disable
+                                        </button>
+                                    </div>
+                                </div>
+
                             </div>
 
-                            @if (session()->has('success') && \Illuminate\Support\Str::contains(session('success'), 'Digital'))
+                            @if (session()->has('success') && \Illuminate\Support\Str::contains(session('success'), 'Add-on'))
                                 <div class="flex items-center gap-4 mt-4">
                                     <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
                                         class="text-sm text-green-600 font-medium">{{ session('success') }}</p>

@@ -99,7 +99,7 @@ Route::middleware(['auth', 'throttle:60,1', \App\Http\Middleware\CheckAccountSta
         Route::get('/settings', [\App\Http\Controllers\SystemSettingController::class, 'index'])->name('settings.index');
         Route::post('/settings/basic', [\App\Http\Controllers\SystemSettingController::class, 'updateBasic'])->name('settings.basic');
         Route::post('/settings/logo', [\App\Http\Controllers\SystemSettingController::class, 'updateLogo'])->name('settings.logo');
-        Route::post('/settings/digital-module', [\App\Http\Controllers\SystemSettingController::class, 'updateDigitalModule'])->name('settings.digital');
+        Route::post('/settings/addon-toggles', [\App\Http\Controllers\SystemSettingController::class, 'updateAddonToggles'])->name('settings.addons');
         Route::get('/settings/terminology', [\App\Http\Controllers\SystemTerminologyController::class, 'index'])->name('settings.terminology');
         Route::put('/settings/terminology', [\App\Http\Controllers\SystemTerminologyController::class, 'update'])->name('settings.terminology.update');
     });

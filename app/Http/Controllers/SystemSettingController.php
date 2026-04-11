@@ -10,6 +10,9 @@ class SystemSettingController extends Controller
     {
         $setting = \App\Models\SystemSetting::where('key', 'system_logo_path')->first();
         $digitalModuleEnabled = \App\Models\SystemSetting::where('key', 'digital_module_enabled')->value('value') ?? 'true';
+        $smsEscalationEnabled = \App\Models\SystemSetting::where('key', 'sms_escalation_enabled')->value('value') ?? 'true';
+        $pdfWatermarkEnabled = \App\Models\SystemSetting::where('key', 'pdf_watermark_enabled')->value('value') ?? 'true';
+        $cryptoLedgerEnabled = \App\Models\SystemSetting::where('key', 'crypto_ledger_enabled')->value('value') ?? 'true';
         $systemTitle = \App\Models\SystemSetting::where('key', 'system_title')->value('value') ?: config('app.name', 'Laravel');
         $systemFavicon = \App\Models\SystemSetting::where('key', 'system_favicon_path')->first();
         $systemAuthorName = \App\Models\SystemSetting::where('key', 'system_author_name')->value('value') ?: 'NAMA NG';
@@ -17,7 +20,7 @@ class SystemSettingController extends Controller
         $systemGuestDescription = \App\Models\SystemSetting::where('key', 'system_guest_description')->value('value') ?: 'Authorized personnel only. Access the central registry to dispatch, track, and acknowledge critical documentation sequences across all inter-departmental desks.';
         $primaryColorHex = \App\Models\SystemSetting::where('key', 'primary_color_hex')->value('value') ?: '#003B73'; // Default to the original dark blue
 
-        return view('admin.settings.index', compact('setting', 'digitalModuleEnabled', 'systemTitle', 'systemFavicon', 'systemAuthorName', 'systemGuestHeader', 'systemGuestDescription', 'primaryColorHex'));
+        return view('admin.settings.index', compact('setting', 'digitalModuleEnabled', 'smsEscalationEnabled', 'pdfWatermarkEnabled', 'cryptoLedgerEnabled', 'systemTitle', 'systemFavicon', 'systemAuthorName', 'systemGuestHeader', 'systemGuestDescription', 'primaryColorHex'));
     }
 
     public function updateLogo(Request $request)
@@ -39,18 +42,29 @@ class SystemSettingController extends Controller
         return redirect()->back()->with('success', 'System logo updated successfully.');
     }
 
-    public function updateDigitalModule(Request $request)
+    public function updateAddonToggles(Request $request)
     {
-        $request->validate([
-            'digital_module_enabled' => 'required|in:true,false',
-        ]);
+        $keys = [
+            'digital_module_enabled',
+            'sms_escalation_enabled',
+            'pdf_watermark_enabled',
+            'crypto_ledger_enabled',
+        ];
 
-        \App\Models\SystemSetting::updateOrCreate(
-            ['key' => 'digital_module_enabled'],
-            ['value' => $request->digital_module_enabled]
-        );
+        foreach ($keys as $key) {
+            if ($request->has($key)) {
+                $request->validate([
+                    $key => 'required|in:true,false',
+                ]);
+                
+                \App\Models\SystemSetting::updateOrCreate(
+                    ['key' => $key],
+                    ['value' => $request->$key]
+                );
+            }
+        }
 
-        return redirect()->back()->with('success', 'Digital Module configuration updated successfully.');
+        return redirect()->back()->with('success', 'Add-on module state updated successfully.');
     }
 
     public function updateBasic(Request $request)
