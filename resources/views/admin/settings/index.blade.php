@@ -5,9 +5,9 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+    <div class="py-12 bg-mesh-gradient min-h-screen">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+            <div class="p-6 sm:p-10 glass-panel hover-lift">
                 <div class="max-w-xl">
                     <section>
                         <header>
@@ -29,7 +29,7 @@
                                     <div>
                                         <x-input-label for="system_title" :value="__('Website Title')" />
                                         <x-text-input id="system_title" name="system_title" type="text"
-                                            class="mt-1 block w-full" :value="old('system_title', $systemTitle)" required autofocus />
+                                            class="mt-1 block w-full glow-input" :value="old('system_title', $systemTitle)" required autofocus />
                                         <x-input-error class="mt-2" :messages="$errors->get('system_title')" />
                                     </div>
 
@@ -43,7 +43,7 @@
                                                 @input="document.getElementById('primary_color_hex').value = $event.target.value.toUpperCase()">
                                             <x-text-input id="primary_color_hex" name="primary_color_hex" type="text"
                                                 pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
-                                                class="block w-full font-mono uppercase" :value="old('primary_color_hex', $primaryColorHex ?? '#003B73')" />
+                                                class="block w-full font-mono uppercase glow-input" :value="old('primary_color_hex', $primaryColorHex ?? '#003B73')" />
                                         </div>
                                         <x-input-error class="mt-2" :messages="$errors->get('primary_color_hex')" />
                                     </div>
@@ -71,7 +71,7 @@
                                         <div>
                                             <x-input-label for="system_guest_description" :value="__('Banner Description Paragraph')" />
                                             <textarea id="system_guest_description" name="system_guest_description" rows="3"
-                                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('system_guest_description', $systemGuestDescription) }}</textarea>
+                                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm glow-input">{{ old('system_guest_description', $systemGuestDescription) }}</textarea>
                                             <x-input-error class="mt-2" :messages="$errors->get('system_guest_description')" />
                                         </div>
                                     </div>
@@ -108,7 +108,7 @@
                 </div>
             </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+            <div class="p-6 sm:p-10 glass-panel hover-lift">
                 <div class="max-w-xl">
                     <section>
                         <header>
@@ -171,7 +171,7 @@
             </div>
 
             <!-- Digital Document Module Toggle -->
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+            <div class="p-6 sm:p-10 glass-panel hover-lift">
                 <div class="max-w-xl">
                     <section>
                         <header>
@@ -195,26 +195,30 @@
                             @csrf
 
                             <div
-                                class="bg-gray-50 p-6 rounded-lg border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                class="bg-white/50 backdrop-blur-sm p-6 rounded-2xl border border-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
                                 <div>
-                                    <h3 class="text-sm font-semibold text-gray-900">Toggle Module State</h3>
-                                    <p class="text-xs text-gray-500 mt-1">
+                                    <h3 class="text-sm font-bold text-gray-900 tracking-wide">Toggle Module State</h3>
+                                    <p class="text-xs text-gray-500 mt-1 font-medium">
                                         Changes take effect immediately across all active sessions.
                                     </p>
                                 </div>
 
                                 <div class="flex items-center gap-4 shrink-0">
-                                    <button type="submit" name="digital_module_enabled" value="true"
-                                        class="px-4 py-2 text-sm font-semibold rounded-md shadow-sm border transition
-                                        @if (isset($digitalModuleEnabled) && $digitalModuleEnabled === 'true') bg-green-600 text-white border-green-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
-                                        Enable
-                                    </button>
-
-                                    <button type="submit" name="digital_module_enabled" value="false"
-                                        class="px-4 py-2 text-sm font-semibold rounded-md shadow-sm border transition
-                                        @if (!isset($digitalModuleEnabled) || $digitalModuleEnabled !== 'true') bg-red-600 text-white border-red-700 @else bg-white text-gray-700 border-gray-300 hover:bg-gray-50 @endif">
-                                        Disable
-                                    </button>
+                                    <label for="digital_module_toggle" class="flex items-center cursor-pointer">
+                                        <!-- toggle input (hidden) -->
+                                        <div class="relative">
+                                            <input type="checkbox" id="digital_module_toggle" class="sr-only toggle-checkbox"
+                                                onchange="document.getElementById('digital_module_state').value = this.checked ? 'true' : 'false'; this.form.submit();"
+                                                @if (isset($digitalModuleEnabled) && $digitalModuleEnabled === 'true') checked @endif>
+                                            
+                                            <!-- track -->
+                                            <div class="block bg-gray-200 w-14 h-8 rounded-full toggle-label"></div>
+                                            
+                                            <!-- dot -->
+                                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition toggle-checkbox"></div>
+                                        </div>
+                                    </label>
+                                    <input type="hidden" name="digital_module_enabled" id="digital_module_state" value="{{ isset($digitalModuleEnabled) && $digitalModuleEnabled === 'true' ? 'true' : 'false' }}">
                                 </div>
                             </div>
 

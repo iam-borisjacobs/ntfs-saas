@@ -11,3 +11,53 @@
         background-size: 1.5em 1.5em;
     }
 }
+
+@layer utilities {
+    /* Premium Glassmorphism */
+    .glass-panel {
+        @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl transition-all duration-300 ease-out;
+    }
+    
+    .glass-panel:hover {
+        @apply shadow-[0_8px_30px_rgb(0,0,0,0.08)] -translate-y-[2px];
+    }
+    
+    /* Input Enhancements */
+    .glow-input {
+        @apply border-gray-200 bg-white/80 transition-all duration-300 shadow-inner rounded-xl;
+    }
+    .glow-input:focus {
+        @apply border-[#003B73]/50 ring-[3px] ring-[#003B73]/10 bg-white;
+    }
+
+    /* Subtle Animated Backgrounds */
+    .bg-mesh-gradient {
+        background-image: 
+        radial-gradient(at 0% 0%, hsla(210,100%,97%,1) 0, transparent 50%), 
+        radial-gradient(at 100% 0%, hsla(220,50%,98%,1) 0, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(210,50%,96%,1) 0, transparent 50%);
+        background-color: #f8fafc;
+    }
+}
+
+/* Custom CSS Toggle Switch */
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #059669; /* emerald-600 */
+}
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #059669; /* emerald-600 */
+}
+.toggle-checkbox:focus + .toggle-label {
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25);
+}
+.toggle-checkbox {
+  right: 0;
+  z-index: 1;
+  border-color: #e5e7eb;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.toggle-label {
+  background-color: #e5e7eb;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
