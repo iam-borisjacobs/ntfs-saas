@@ -4,10 +4,16 @@
             <h2 class="font-semibold text-xl text-primary leading-tight">
                 {{ __('User Management') }}
             </h2>
-            <a href="{{ route('admin.users.create') }}"
-                class="px-4 py-2 bg-primary text-white rounded-sm text-sm font-semibold tracking-wide hover:bg-blue-800 transition">
-                + ONBOARD USER
-            </a>
+            <div class="flex space-x-2">
+                <a href="{{ route('admin.users.bulk') }}"
+                    class="px-4 py-2 bg-gray-100 text-gray-700 border border-gray-300 rounded-sm text-sm font-semibold tracking-wide hover:bg-gray-200 transition">
+                    BULK ONBOARD
+                </a>
+                <a href="{{ route('admin.users.create') }}"
+                    class="px-4 py-2 bg-primary text-white rounded-sm text-sm font-semibold tracking-wide hover:bg-blue-800 transition">
+                    + ONBOARD USER
+                </a>
+            </div>
         </div>
     </x-slot>
 

@@ -7,6 +7,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\FileMovement;
 use App\Models\FileRecord;
+use App\Models\User;
+use App\Services\SmsService;
 use Carbon\Carbon;
 
 class EscalateOverdueFiles extends Command
@@ -84,6 +86,14 @@ class EscalateOverdueFiles extends Command
                         'user_id' => null, // Script execution
                         'created_at' => now(),
                     ]);
+
+                    // Send WhatsApp Notification to Destination User
+                    $smsService = app(SmsService::class);
+                    $targetUser = User::find($lockedMovement->destination_user_id);
+                    if ($targetUser && !empty($targetUser->phone_number)) {
+                        $message = "ESCALATION ALERT: Document transmission (Movement ID: {$lockedMovement->id}) is significantly overdue. Kindly action immediately.";
+                        $smsService->sendWhatsApp($targetUser->phone_number, $message);
+                    }
                 }
             });
         }

@@ -47,4 +47,36 @@ class SmsService
             return false;
         }
     }
+
+    /**
+     * Send a WhatsApp message specifically for the SMS Escalation Engine.
+     * 
+     * @param string $toNumber
+     * @param string $message
+     * @return bool
+     */
+    public function sendWhatsApp(string $toNumber, string $message): bool
+    {
+        $toNumberStr = $toNumber ?: '';
+        $fromNumberStr = $this->fromNumber ?: '';
+        
+        $whatsAppTo = str_starts_with($toNumberStr, 'whatsapp:') ? $toNumberStr : 'whatsapp:' . $toNumberStr;
+        $whatsAppFrom = str_starts_with($fromNumberStr, 'whatsapp:') ? $fromNumberStr : 'whatsapp:' . $fromNumberStr;
+
+        if (!$this->client || empty($this->fromNumber)) {
+            Log::info("[MOCK WHATSAPP TO $whatsAppTo]: $message");
+            return true;
+        }
+
+        try {
+            $this->client->messages->create($whatsAppTo, [
+                'from' => $whatsAppFrom,
+                'body' => $message
+            ]);
+            return true;
+        } catch (Exception $e) {
+            Log::error('Twilio WhatsApp Error: ' . $e->getMessage());
+            return false;
+        }
+    }
 }

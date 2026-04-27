@@ -54,6 +54,17 @@
                                 @enderror
                             </div>
 
+                            <div>
+                                <label for="phone_number" class="block text-sm font-semibold text-primary">WhatsApp/Phone Number</label>
+                                <input type="text" name="phone_number" id="phone_number"
+                                    value="{{ old('phone_number', $user->phone_number ?? '') }}" placeholder="+234..."
+                                    class="mt-1 block w-full rounded-sm border-gray-300 focus:border-primary focus:ring focus:ring-primary shadow-sm font-mono tracking-wider">
+                                <p class="text-xs text-gray-500 mt-1">Used by the SMS Escalation Engine. Format: +[CountryCode][Number]</p>
+                                @error('phone_number')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Password block -->
                             <div>
                                 <label for="password"

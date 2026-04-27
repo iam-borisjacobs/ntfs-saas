@@ -22,7 +22,9 @@ class AuditLoggerService
             $previousHash = $lastLog ? $lastLog->hash : 'GENESIS_BLOCK';
 
             // Ensure baseline payload values exist
-            $payload['created_at'] = now();
+            if (!isset($payload['created_at'])) {
+                $payload['created_at'] = now();
+            }
             if (!isset($payload['ip_address'])) {
                 $payload['ip_address'] = request()->ip() ?? '127.0.0.1';
             }

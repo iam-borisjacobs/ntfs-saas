@@ -90,6 +90,8 @@ Route::middleware(['auth', 'throttle:60,1', \App\Http\Middleware\CheckAccountSta
 
         // Users
         Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+        Route::get('/users/bulk', [\App\Http\Controllers\UserController::class, 'bulk'])->name('users.bulk');
+        Route::post('/users/bulk', [\App\Http\Controllers\UserController::class, 'processBulk'])->name('users.bulk.process');
         Route::get('/users/create', [\App\Http\Controllers\UserController::class, 'create'])->name('users.create');
         Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
         Route::get('/users/{user}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
